@@ -15,11 +15,14 @@ if ($conn->connect_error) {
 
 // Collect POST data
 $name = $_POST['name'] ?? '';
+echo "Received name: " . htmlspecialchars($name) . "<br>";
 $date = $_POST['date'] ?? '';
-$class = $_POST['classPrompt'] ?? '';
+echo "Received date: " . htmlspecialchars($date) . "<br>";
+$section = $_POST['section'] ?? '';
+echo "Received section: " . htmlspecialchars($section) . "<br>";
 
 // Basic validation
-if (empty($name) || empty($date) || empty($class)) {
+if ($name == '' || $date == '' || $section = '') {
     die("Error: All fields are required.");
 }
 
