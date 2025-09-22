@@ -14,21 +14,24 @@ if ($conn->connect_error) {
 }
 
 // Collect POST data
-$name = $_POST['name'] ?? '';
+
+$name = trim($_POST['name'] ?? '');
+$date = trim($_POST['date'] ?? '');
+$section = trim($_POST['section'] ?? '');
+
+//Debug Output
 echo "Received name: " . htmlspecialchars($name) . "<br>";
-$date = $_POST['date'] ?? '';
 echo "Received date: " . htmlspecialchars($date) . "<br>";
-$section = $_POST['section'] ?? '';
 echo "Received section: " . htmlspecialchars($section) . "<br>";
 
 // Basic validation
-if ($name == '' || $date == '' || $section = '') {
+if ($name === '' || $date === '' || $section === '') {
     die("Error: All fields are required.");
 }
 
-// Prepare and bind (to prevent SQL injection)
-$stmt = $conn->prepare("INSERT INTO appointments (name, date, section) VALUES (?, ?, ?)");
-$stmt->bind_param("sss", $name, $date, $class);
+// Bind parameters and prepare statement
+$stmt = $conn->prepare("INSERT INTO appointments (student_name, appointment_date, section) VALUES (?, ?, ?)");
+$stmt->bind_param("sss", $name, $date, $section);
 
 // Execute query
 if ($stmt->execute()) {
