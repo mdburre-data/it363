@@ -2,17 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Basic Form with PHP Calls</title>
+  <title>Mock Appointment Scheduler</title>
 </head>
 <body>
-  <h1>Basic Form</h1>
-  <form action="submit_appointment.php" method="POST" onsubmit="handleSubmit(event)">
-  <label for="name">Name:</label>
-  <input type="text" id="name" name="name" required><br><br>
-
+  <h1>Select Date</h1>
+  <form id="dateForm" method="POST" onsubmit="timeHandler(event)">
   <label for="date">Date:</label>
   <input type="date" id="date" name="date" required><br><br>
+  <button type="submit">Submit</button>
+  </form>
+  <div id="buttonContainer" style="margin-top:20px;"></div>
 
+  <h1>Information</h1>
+  <form id="appointmentForm" method="POST" onsubmit="handleSubmit(event)">
+  <label for="name">Name:</label>
+  <input type="text" id="name" name="name" required><br><br>
   <label for="section">Section:</label>
   <input type="text" id="section" name="section" required><br><br>
 
@@ -29,28 +33,48 @@
 </body>
 
 <script>
-  // Function to call PHP scripts
-  function callPhp(scriptName) {
-    fetch(scriptName)
-      .then(response => response.text())
-      .then(data => {
-        // Instead of alert, inject result into #output
-        document.getElementById("output").innerHTML = data;
-      })
-      .catch(error => {
-        document.getElementById("output").innerHTML = "Error: " + error;
-      });
-  }
-
-  // Handle form submission
-  function handleSubmit(event) {
-    event.preventDefault(); // prevent page reload
+  // Handle date selection submission
+  function timeHandler(event) {
+   event.preventDefault(); 
 
     const form = event.target;
     const formData = new FormData(form);
 
+    fetch("get_available.php", {  
+    method: "POST",
+    body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      //Using the JSON data returned from get_available.php, show radio buttons for available time slots
+      buttonContainerHTML = '';
+      for (let i = 0; i < data.available_slots.length; i++) {
+        buttonContainerHTML += `<input type=radio name="time_slot" value="${data.available_slots[i]}">${data.available_slots[i]}</input>`;
+      }
+      document.getElementById('buttonContainer').innerHTML = buttonContainerHTML;
+    })
+    .catch(error => {
+      document.getElementById('buttonContainer').innerHTML = 'Error: ' + error;
+    });
+  }
+
+  // Handle primary form submission
+  function handleSubmit(event) {
+      event.preventDefault();
+
+    // Combine data from both forms into one FormData object
+    const appointmentForm = document.getElementById('appointmentForm');
+    const formData = new FormData(appointmentForm);
+    const dateForm = document.getElementById('dateForm');
+    const dateFormData = new FormData(dateForm);
+    
+    // Append date and time to appointment form data
+    formData.append('date', dateFormData.get('date'));
+    formData.append('time_slot', document.querySelector('input[name="time_slot"]:checked').value+":00");
+    const form = appointmentForm;
+
     // Submit the form via fetch so the page doesn't navigate away
-    fetch(form.action, {
+    fetch("submit_appointment.php", {
       method: 'POST',
       body: formData
     })
@@ -63,7 +87,20 @@
     });
   }
 
+// Function to call PHP scripts
+function callPhp(scriptName) {
+    fetch(scriptName)
+      .then(response => response.text())
+      .then(data => {
+        // Instead of alert, inject result into #output
+        document.getElementById("output").innerHTML = data;
+      })
+      .catch(error => {
+        document.getElementById("output").innerHTML = "Error: " + error;
+      });
+}
+
+
+
 </script>
-
-
 </html>
