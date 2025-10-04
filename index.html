@@ -5,6 +5,25 @@
   <title>Mock Appointment Scheduler</title>
 </head>
 <body>
+  <p><a href="admin_page.html">View Admin Page</a></p>
+  <h1>Create Student</h1>
+  <form id="studentForm" method="POST" onsubmit="userCreationHandler(event)">
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required><br><br>
+  <label for="fName">First Name:</label>
+  <input type="text" id="fName" name="fName" required><br><br>
+  <label for="lName">Last Name:</label>
+  <input type="text" id="lName" name="lName" required><br><br>
+  <label for="section">Section:</label>
+  <select id="section" name="section" required>
+    <option value="1">Section 1</option>
+    <option value="2">Section 2</option>
+  </select><br>
+  <button type="submit">Submit</button>
+  <div id="userOutput" style="margin-top:20px;"></div>
+</form>
+
+
   <h1>Select Date</h1>
   <form id="dateForm" method="POST" onsubmit="timeHandler(event)">
   <label for="date">Date:</label>
@@ -15,24 +34,47 @@
 
   <h1>Information</h1>
   <form id="appointmentForm" method="POST" onsubmit="handleSubmit(event)">
-  <label for="name">Name:</label>
-  <input type="text" id="name" name="name" required><br><br>
-  <label for="section">Section:</label>
-  <input type="text" id="section" name="section" required><br><br>
-
+  <label for="email">Student Email:</label>
+  <input type="email" id="email" name="email" required><br><br>
+  <label for="reason">Reason for Appointment:</label>
+  <input type="text" id="reason" name="reason" required><br><br>
+    
   <button type="submit">Submit</button>
 </form>
-
 
   <h2>Run PHP Scripts</h2>
   <button onclick="callPhp('load_database.php')">Load Database</button>
   <button onclick="callPhp('unload_database.php')">Drop Database</button>
   <button onclick="callPhp('display_appointment.php')">Display Appointments</button>
+  <button onclick="callPhp('display_booked_appointments.php')">Display Booked Appointments</button>
+  <button onclick="callPhp('display_user.php')">Display Users</button>
   
 <div id="output" style="margin-top:20px;"></div>
 </body>
 
 <script>
+  // Create user submission handler
+  function userCreationHandler(event) {
+   event.preventDefault(); 
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    fetch("addUser.php", {  
+    method: "POST",
+    body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+      //Using the JSON data returned from addUser.php, show radio buttons for available time slots
+      userOutputHTML = data;
+      document.getElementById('userOutput').innerHTML = userOutputHTML;
+    })
+    .catch(error => {
+      document.getElementById('userOutput').innerHTML = 'Error: ' + error;
+    });
+  }
+
   // Handle date selection submission
   function timeHandler(event) {
    event.preventDefault(); 
@@ -70,7 +112,7 @@
     
     // Append date and time to appointment form data
     formData.append('date', dateFormData.get('date'));
-    formData.append('time_slot', document.querySelector('input[name="time_slot"]:checked').value+":00");
+    formData.append('time_slot', document.querySelector('input[name="time_slot"]:checked').value);
     const form = appointmentForm;
 
     // Submit the form via fetch so the page doesn't navigate away
@@ -99,8 +141,6 @@ function callPhp(scriptName) {
         document.getElementById("output").innerHTML = "Error: " + error;
       });
 }
-
-
 
 </script>
 </html>

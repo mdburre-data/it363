@@ -1,7 +1,7 @@
 <?php
 
 //
-// Returns HTML table of all booked appointments
+// Returns HTML table of all Users
 //
 
 // Database connection settings
@@ -19,8 +19,8 @@ if ($conn->connect_error) {
     echo "No Database Found. Load Database to continue";
 }
 
-// Query all appointments
-$sql = "SELECT * FROM appointments";
+// Query all users
+$sql = "SELECT * FROM user";
 $result = $conn->query($sql);
 
 // Return as an HTML table

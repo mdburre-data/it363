@@ -1,5 +1,11 @@
 <?php
+
+//
+// Returns JSON object of available appointment slots for a given date
+//
+
 header('Content-Type: application/json');
+
 // Database connection settings
 $host = "localhost:3306";
 $user = "root";
@@ -8,78 +14,93 @@ $dbname = "tutoring_center";
 
 // Connect
 $conn = new mysqli($host, $user, $pass, $dbname);
-
-// Check connection
 if ($conn->connect_error) {
-    header('Content-Type: application/json');
     http_response_code(500);
     echo json_encode(['error' => 'Connection failed: ' . $conn->connect_error]);
     exit;
 }
 
-// Get the date from the request (form sends POST)
+// Get and validate date
 $date = $_POST['date'] ?? '';
-
-// Validate the date format (HTML date input uses Y-m-d)
-if (!DateTime::createFromFormat('Y-m-d', $date) || DateTime::createFromFormat('Y-m-d', $date)->format('Y-m-d') !== $date) {
-    header('Content-Type: application/json');
+$inputDate = DateTime::createFromFormat('Y-m-d', $date);
+error_log("Requested date: $date");
+if (!$inputDate || $inputDate->format('Y-m-d') !== $date) {
     http_response_code(400);
     echo json_encode(['error' => 'Invalid date format. Use Y-m-d']);
     exit;
 }
 
-// Determine day of week for scheduling_hours lookup
-$dayOfWeek = (int) date('N', strtotime($date)); // 1 (Monday) to 7 (Sunday)
-
-// Fetch scheduling center hours using mysqli (minimal: start_time and end_time)
-$stmt = $conn->prepare("SELECT start_time, end_time FROM scheduling_hours WHERE day_of_week = ? LIMIT 1");
-$stmt->bind_param('i', $dayOfWeek);
-$stmt->execute();
-
-$result = $stmt->get_result();
-if ($result->num_rows === 0) {
-    echo json_encode(['error' => 'No scheduling hours found for this date']);
+// Check within two weeks
+$today = new DateTime();
+$twoWeeks = (new DateTime())->modify('+14 days');
+if ($inputDate < $today || $inputDate > $twoWeeks) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Date must be within the next two weeks.']);
     exit;
 }
-$row = $result->fetch_assoc();
+
+// Determine day of week
+$dayOfWeek = (int)$inputDate->format('N');
+$dateStr = $inputDate->format('Y-m-d');
+
+
+// If date not in DATES table, add it without specific hours. If already there, ignore
+$conn->query("INSERT IGNORE INTO dates (date_description, day_of_week) VALUES ('$dateStr', $dayOfWeek)");
+
+// Get scheduling hours for this date and day of week
+// THIS USES COALESCE TO GET DEFAULT HOURS IF NONE SET FOR THE DATE
+$sql = <<<SQL
+SELECT dates.day_of_week,
+       COALESCE(dates.start_time, scheduling_hours.start_time) AS start_time,
+       COALESCE(dates.end_time, scheduling_hours.end_time) AS end_time
+FROM dates
+LEFT JOIN scheduling_hours ON dates.day_of_week = scheduling_hours.day_of_week
+WHERE dates.date_description = '$dateStr'
+SQL;
+$res = $conn->query($sql);
+if ($res->num_rows === 0) {
+    echo json_encode(['error' => 'No scheduling hours for this date']);
+    exit;
+}
+$row = $res->fetch_assoc();
 $start_time = $row['start_time'];
-$end_time   = $row['end_time'];
+$end_time = $row['end_time'];
 
-$stmt->close();
+// Check if slots already exist for this date
+$check = $conn->query("SELECT COUNT(*) AS count FROM appointments WHERE app_date = '$date'");
+$row = $check->fetch_assoc();
+if ($row['count'] == 0) {
+    $conn->query("INSERT INTO dates (date_description, day_of_week) VALUES ('$date', $dayOfWeek)");
+    // Divide hours into 30 min slots
+    $startDateTime = new DateTime($date . ' ' . $start_time);
+    $endDateTime   = new DateTime($date . ' ' . $end_time);
 
-// Divide Hours into 30-minute slots
-$startDateTime = new DateTime($date . ' ' . $start_time);
-$endDateTime   = new DateTime($date . ' ' . $end_time);
+    $dateTimes = new DatePeriod(
+        $startDateTime,
+        new DateInterval('PT30M'),
+        $endDateTime
+    );
 
-$dateTimes = new DatePeriod(
-    $startDateTime,
-    new DateInterval('PT30M'),
-    $endDateTime
-);
-
-
-$appointmentTimes = [];
-
-foreach ($dateTimes as $dt) {
-    $slotTime = $dt->format("H:i:s");
-   $result = $conn->query("SELECT COUNT(*) AS count 
-                        FROM appointments 
-                        WHERE appointment_date = '$date' 
-                        AND appointment_time = '$slotTime'");
-        if (!$result) {
-         header('Content-Type: application/json');
-         echo json_encode(['error' => 'Query failed: ' . $conn->error]);
-         exit;
+    foreach ($dateTimes as $dt) {
+        $slotTime = $dt->format("H:i:s");
+        $sql = "INSERT INTO appointments (app_date, app_time) VALUES ('$date', '$slotTime')";
+        if (!$conn->query($sql)) {
+            error_log("Insert failed: " . $conn->error . " | SQL: $sql");
+        } else {
+            error_log("Inserted slot: $slotTime");
         }
-    $row = $result->fetch_assoc();
-    if ((int)$row['count'] === 0) {
-        $appointmentTimes[] = $dt->format("H:i");
     }
 }
 
-$conn->close();
+// Now fetch them back to return JSON
+$result = $conn->query("SELECT app_time FROM appointments WHERE app_date = '$date' ORDER BY app_time");
+$slots = [];
+while ($r = $result->fetch_assoc()) {
+    $slots[] = $r['app_time'];
+}
 
-// Return the start and end time for the requested date
-header('Content-Type: application/json');
-echo json_encode(['start_time' => $start_time, 'end_time' => $end_time, 'available_slots' => $appointmentTimes]);
+echo json_encode(['available_slots' => $slots]);
+
+
+$conn->close();
 ?>

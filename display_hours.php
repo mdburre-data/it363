@@ -20,7 +20,7 @@ if ($conn->connect_error) {
 }
 
 // Query all appointments
-$sql = "SELECT * FROM appointments";
+$sql = "SELECT * FROM scheduling_hours";
 $result = $conn->query($sql);
 
 // Return as an HTML table

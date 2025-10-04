@@ -4,6 +4,7 @@
 // Returns HTML table of all booked appointments
 //
 
+
 // Database connection settings
 $host = "localhost:3306";
 $user = "root";
@@ -19,8 +20,8 @@ if ($conn->connect_error) {
     echo "No Database Found. Load Database to continue";
 }
 
-// Query all appointments
-$sql = "SELECT * FROM appointments";
+// Query all booked appointments
+$sql = "SELECT * FROM appointments WHERE student_email IS NOT NULL";
 $result = $conn->query($sql);
 
 // Return as an HTML table
