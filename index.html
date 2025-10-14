@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Mock Appointment Scheduler</title>
 </head>
-<body>
+<body style="font-family: Arial, Helvetica, sans-serif;">
   <p><a href="admin_page.html">View Admin Page</a></p>
   <h1>Create Student</h1>
   <form id="studentForm" method="POST" onsubmit="userCreationHandler(event)">
@@ -21,26 +21,28 @@
   </select><br>
   <button type="submit">Submit</button>
   <div id="userOutput" style="margin-top:20px;"></div>
-</form>
 
+  <h2>Tutoring Hours:<br></h2>
+  <div id="tutoringHoursOutput"></div>
 
-  <h1>Select Date</h1>
-  <form id="dateForm" method="POST" onsubmit="timeHandler(event)">
-  <label for="date">Date:</label>
-  <input type="date" id="date" name="date" required><br><br>
-  <button type="submit">Submit</button>
   </form>
-  <div id="buttonContainer" style="margin-top:20px;"></div>
+    <h1>Select Date</h1>
+    <form id="dateForm" method="POST" onsubmit="timeHandler(event)">
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required><br><br>
+    <button type="submit">Submit</button>
+    </form>
+    <div id="buttonContainer" style="margin-top:20px;"></div>
 
-  <h1>Information</h1>
-  <form id="appointmentForm" method="POST" onsubmit="handleSubmit(event)">
-  <label for="email">Student Email:</label>
-  <input type="email" id="email" name="email" required><br><br>
-  <label for="reason">Reason for Appointment:</label>
-  <input type="text" id="reason" name="reason" required><br><br>
-    
-  <button type="submit">Submit</button>
-</form>
+    <h1>Information</h1>
+    <form id="appointmentForm" method="POST" onsubmit="handleSubmit(event)">
+    <label for="email">Student Email:</label>
+    <input type="email" id="email" name="email" required><br><br>
+    <label for="reason">Reason for Appointment:</label>
+    <input type="text" id="reason" name="reason" required><br><br>
+      
+    <button type="submit">Submit</button>
+  </form>
 
   <h2>Run PHP Scripts</h2>
   <button onclick="callPhp('load_database.php')">Load Database</button>
@@ -53,6 +55,41 @@
 </body>
 
 <script>
+
+// Fetch and display tutoring hours on page load
+document.addEventListener('DOMContentLoaded', function() {
+  fetch('get_hours.php')
+    .then(response => response.json())
+    .then(data => {
+      console.log("Server returned:", data);
+
+      let hoursHTML = '<ul>';
+
+      // `data` is already an array
+      data.forEach(row => {
+        // Convert numeric day to weekday name
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayName = days[parseInt(row.day_of_week) % 7]; // `% 7` ensures it wraps correctly
+
+        // Format hours nicely
+        const start = row.start_time === "00:00:00" && row.end_time === "00:00:00"
+          ? "Closed"
+          : `${row.start_time.slice(0,5)} - ${row.end_time.slice(0,5)}`;
+
+        hoursHTML += `<li>${dayName}: ${start}</li>`;
+      });
+
+      hoursHTML += '</ul>';
+      document.getElementById('tutoringHoursOutput').innerHTML = hoursHTML;
+    })
+    .catch(error => {
+      document.getElementById('tutoringHoursOutput').innerHTML =
+        'Error loading hours: ' + error;
+    });
+});
+
+
+
   // Create user submission handler
   function userCreationHandler(event) {
    event.preventDefault(); 

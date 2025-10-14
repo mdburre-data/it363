@@ -18,6 +18,8 @@ General:
 PHP Scripts:
     Remove "scheduling_" from variable names
 Admin page:
-    Block off days
+    Block off days 
+        This has been implemented. Probably need to add additional "is_blocked" variable to track if date is
+        actually blocked off or just a weekend
     Block off appointments
     

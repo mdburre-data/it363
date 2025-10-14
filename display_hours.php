@@ -1,7 +1,7 @@
 <?php
 
 //
-// Returns HTML table of all booked appointments
+// Returns HTML table of all hours
 //
 
 // Database connection settings
