@@ -21,7 +21,7 @@ if ($conn->connect_error) {
 }
 
 // Query all booked appointments
-$sql = "SELECT * FROM appointments WHERE student_email IS NOT NULL";
+$sql = "SELECT * FROM appointments WHERE is_scheduled IS TRUE";
 $result = $conn->query($sql);
 
 // Return as an HTML table
