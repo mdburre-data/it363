@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Mock Appointment Scheduler</title>
 </head>
-<body>
+<body style="font-family: Arial, Helvetica, sans-serif;">
   <p><a href="index.html">Back to Main Page</a></p>
   <h1>Admin Page</h1>
     <p>Welcome, Admin! Use the buttons below to manage the database.</p>
@@ -41,6 +41,17 @@
       <button type="submit">Submit</button>
     </form>
 
+    <h2>Change Daily Hours</h2>
+    <form id="changeDailyHoursForm" method="POST" onsubmit="changeDailyHoursHandler(event)">
+      <label for="changeHoursDate">Date to Change:</label>
+      <input type="date" id="changeHoursDate" name="changeHoursDate" required><br><br>
+      <label for="updatedStartTime">Start Time:</label>
+      <input type="time" id="updatedStartTime" name="updatedStartTime" required><br><br>
+      <label for="updatedEndTime">End Time:</label>
+      <input type="time" id="updatedEndTime" name="updatedEndTime" required><br><br>
+      <button type="submit">Submit</button>
+    </form>
+
       <div id="changeHoursOutput" style="margin-top:20px;"></div>
     
       <h2>Run PHP Scripts</h2>
@@ -55,6 +66,24 @@
     const form = event.target;
     const formData = new FormData(form);
     fetch('change_hours.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+      // Instead of alert, inject result into #changeHoursOutput
+      document.getElementById("changeHoursOutput").innerHTML = data;
+    })
+    .catch(error => {
+      document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
+    });
+  }
+
+  function changeDailyHoursHandler(event) {
+    event.preventDefault(); 
+    const form = event.target;
+    const formData = new FormData(form);
+    fetch('change_daily_hours.php', {
       method: 'POST',
       body: formData
     })

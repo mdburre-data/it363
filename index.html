@@ -6,7 +6,7 @@
 </head>
 <body style="font-family: Arial, Helvetica, sans-serif;">
   <p><a href="admin_page.html">View Admin Page</a></p>
-  <h1>Create Student</h1>
+  <h2>Student Sign Up</h2>
   <form id="studentForm" method="POST" onsubmit="userCreationHandler(event)">
   <label for="email">Email:</label>
   <input type="email" id="email" name="email" required><br><br>
@@ -22,11 +22,12 @@
   <button type="submit">Submit</button>
   <div id="userOutput" style="margin-top:20px;"></div>
 
-  <h2>Tutoring Hours:<br></h2>
+  <h2>Tutoring Hours (Home page):<br></h2>
   <div id="tutoringHoursOutput"></div>
 
+  <h1>Appointment Registration</h1>
   </form>
-    <h1>Select Date</h1>
+    <h2>Check Appointment Date</h2>
     <form id="dateForm" method="POST" onsubmit="timeHandler(event)">
     <label for="date">Date:</label>
     <input type="date" id="date" name="date" required><br><br>
@@ -34,7 +35,7 @@
     </form>
     <div id="buttonContainer" style="margin-top:20px;"></div>
 
-    <h1>Information</h1>
+    <h2>Appointment Details</h2>
     <form id="appointmentForm" method="POST" onsubmit="handleSubmit(event)">
     <label for="email">Student Email:</label>
     <input type="email" id="email" name="email" required><br><br>
