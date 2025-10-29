@@ -116,11 +116,11 @@ $check = $conn->query("SELECT COUNT(*) AS count FROM user");
 $row = $check->fetch_assoc();
 if ($row['count'] == 0) {
     $sql = "INSERT INTO user (email, fName, lName, section) VALUES
-        ('witcher@example.com', 'Geralt', 'Rivia', '1'),
-        ('tombraider@example.com', 'Lara', 'Croft', '2'),
-        ('halflife@example.com', 'Gordon', 'Freeman', '2a'),
-        ('doom@example.com', 'Doom', 'Guy', '0'),
-        ('halo@example.com', 'Master', 'Chief', '-5')";
+        ('witcher@ilstu.com', 'Geralt', 'Rivia', '1'),
+        ('tombraider@ilstu.com', 'Lara', 'Croft', '2'),
+        ('halflife@ilstu.com', 'Gordon', 'Freeman', '2a'),
+        ('doom@ilstu.com', 'Doom', 'Guy', '0'),
+        ('halo@ilstu.com', 'Master', 'Chief', '-5')";
     if ($conn->query($sql) === TRUE) {
         echo "Inserted 5 example users.<br>";
     } else {
@@ -153,11 +153,11 @@ $check = $conn->query("SELECT COUNT(*) AS count FROM appointments");
 $row = $check->fetch_assoc();
 if ($row['count'] == 0) {
     $sql = "INSERT INTO appointments (email, app_date, app_time, is_scheduled, reason) VALUES
-        ('witcher@example.com', '2025-10-25', '09:00:00', TRUE, 'Potion ingredient gathering tool'),
-        ('tombraider@example.com', '2025-10-26', '09:30:00', TRUE, 'Expedition planning'),
-        ('halflife@example.com', '2025-10-27', '10:00:00', TRUE, 'Help with resonance cascades'),
-        ('doom@example.com', '2025-10-28', '10:30:00', TRUE, 'Demon containment advice'),
-        ('halo@example.com', '2025-10-29', '09:00:00', TRUE, 'Strategy session')";
+        ('witcher@ilstu.com', '2025-10-25', '09:00:00', TRUE, 'Potion ingredient gathering tool'),
+        ('tombraider@ilstu.com', '2025-10-26', '09:30:00', TRUE, 'Expedition planning'),
+        ('halflife@ilstu.com', '2025-10-27', '10:00:00', TRUE, 'Help with resonance cascades'),
+        ('doom@ilstu.com', '2025-10-28', '10:30:00', TRUE, 'Demon containment advice'),
+        ('halo@ilstu.com', '2025-10-29', '09:00:00', TRUE, 'Strategy session')";
     if ($conn->query($sql) === TRUE) {
         echo "Inserted 5 example appointments.<br>";
     } else {
