@@ -93,7 +93,7 @@ if ($row['count'] == 0) {
 }
 
 // Now fetch them back to return JSON
-$result = $conn->query("SELECT app_time FROM appointments WHERE app_date = '$date' ORDER BY app_time");
+$result = $conn->query("SELECT app_time FROM appointments WHERE app_date = '$date' AND is_scheduled = 0 ORDER BY app_time");
 $slots = [];
 while ($r = $result->fetch_assoc()) {
     $slots[] = $r['app_time'];
