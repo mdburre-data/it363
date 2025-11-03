@@ -8,7 +8,8 @@
   <p><a href="debugging_home.html">Back to Main Page</a></p>
   <h1>Admin Page</h1>
     <p>Welcome, Admin! Use the buttons below to manage the database.</p>
-    
+    <h2>Upcoming Appointments</h2>
+    <div id="upcomingAppointments"></div>
     <h2>Change Weekly Scheduling Hours</h2>
     <form id="changeHoursForm" method="POST" onsubmit="changeHoursHandler(event)">
       <label for="dayOfWeek">Day of the Week:</label>
@@ -144,5 +145,68 @@
           document.getElementById("output").innerHTML = "Error: " + error;
         });
   }
+
+  // Function to load upcoming appointments on page load
+  document.addEventListener("DOMContentLoaded", function() {
+    // Generate an array of the next 14 days
+    const today = new Date();
+    const days = [];
+    for (let i = 0; i < 14; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const formattedDate = date.toISOString().split("T")[0]; // YYYY-MM-DD
+      days.push({
+        date: formattedDate,
+        appointments: []
+      });
+    }
+
+    // Fetch appointment data and merge into the days array
+    fetch("get_upcoming_appointments.php")
+      .then(response => response.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          data.forEach(app => {
+            // Find matching date in the 14-day array
+            const match = days.find(d => d.date === app.app_date);
+            if (match) {
+              match.appointments.push(app);
+            }
+          });
+        }
+
+        // Build the calendar display
+        let calendar = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+        days.forEach(day => {
+          const dateObj = new Date(day.date);
+          const dayLabel = dateObj.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+
+          calendar += `<div style="border: 1px solid #ccc; padding: 10px; width: 160px; text-align: center; border-radius: 8px;">`;
+          calendar += `<strong>${dayLabel}</strong><br><small>${day.date}</small><br>`;
+
+          if (day.appointments.length > 0) {
+            calendar += `<hr style="margin:6px 0;">`;
+            day.appointments.forEach(app => {
+              calendar += `
+                <div style="margin-bottom: 5px;">
+                  <strong>${app.app_time}</strong><br>
+                  ${app.email}<br>
+                  <small>${app.reason || ""}</small>
+                </div>`;
+            });
+          } else {
+            calendar += `<div style="color: #999;">No appointments</div>`;
+          }
+
+          calendar += `</div>`;
+        });
+        calendar += `</div>`;
+
+        document.getElementById("upcomingAppointments").innerHTML = calendar;
+      })
+      .catch(error => {
+        document.getElementById("upcomingAppointments").innerHTML = "Error: " + error;
+      });
+  });
 </script>
 </html>

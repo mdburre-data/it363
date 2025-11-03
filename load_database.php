@@ -138,6 +138,8 @@ $sql = "CREATE TABLE IF NOT EXISTS appointments (
     app_time TIME NOT NULL,
     is_scheduled BOOLEAN DEFAULT FALSE,
     reason TEXT,
+    reminded_at TIMESTAMP NULL DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (email) REFERENCES user(email),
     FOREIGN KEY (app_date) REFERENCES dates(date_description)
 )";
@@ -166,6 +168,24 @@ if ($row['count'] == 0) {
 } else {
     echo "Appointments table already has data, skipping insert.<br>";
 }
+
+// Create Login_Codes table if not exists
+$sql = "CREATE TABLE IF NOT EXISTS login_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100),
+    code_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    used_at TIMESTAMP NULL DEFAULT NULL,
+    expire_ats TIMESTAMP NOT NULL,
+    FOREIGN KEY (email) REFERENCES user(email),
+    FOREIGN KEY (app_date) REFERENCES dates(date_description)
+)";
+if ($conn->query($sql) === TRUE) {
+    echo "Creating Table 'appointments'<br>";
+} else {
+    die("Error creating table: " . $conn->error);
+}
+
 
 // Close connection
 $conn->close();

@@ -10,19 +10,15 @@ Navigate to: http://localhost/it363/ to confirm the site exists. To get find pag
 
 TODO:
 General:
-    Check normalization ("You need to be in the 3rd Normal Form for this porject otherwise it is very bad")
     Move php scripts into folders?
     Clean up submit_appointments and load_database
     Getters should return JSON objects, not HTML (change from display_ to get_)
         OR just remake display_ to create get_ (phase them out instead of remove them)
     "Display Appointments" should probably only return same day/future appointments
         (For prod, not helpful for debugging)
-PHP Scripts:
-    Remove "scheduling_" from variable names (Done? Double check)
 Admin page:
     Block off days 
         - This has been implemented. Probably need to add additional "is_blocked" variable to track if date is
         actually blocked off or just a weekend
-        - STILL NEED TO ITERATE THROUGH PREVIOUSLY CREATED APPOINTEMENTS AND REMOVE THEM IF NOT ALREADY BOOKED
     Block off appointments
     

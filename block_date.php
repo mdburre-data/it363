@@ -45,7 +45,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['blockDate'])) {
         $updateStmt->bind_param('sss', $startTime, $endTime, $formattedDate);
         $updateStmt->execute();
         $updateStmt->close();
-        echo "Date updated successfully.";
+
+        $updateStmt = $conn->prepare("DELETE FROM appointments WHERE app_date = ? AND is_scheduled = FALSE");
+        $dayOfWeek = date('N', strtotime($formattedDate));
+        $updateStmt->bind_param('s', $formattedDate);
+        $updateStmt->execute();
+        $updateStmt->close();
+
+        echo "Date Blocked successfully.";
+        $stmt = $conn->prepare("SELECT * FROM appointments WHERE app_date = ?");
+        $stmt->bind_param('s', $formattedDate);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            echo"<br>There are remaining scheduled appointments on this date. Please contact the students to reschedule.";
+        }
+        
     }
 
     $stmt->close();
