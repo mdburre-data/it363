@@ -31,19 +31,26 @@ echo "Received first name: " . htmlspecialchars($fName) . "<br>";
 echo "Received last name: " . htmlspecialchars($lName) . "<br>";
 echo "Received section: " . htmlspecialchars($section) . "<br>";
 
-// Bind parameters and prepare statement
-$stmt = $conn->prepare("INSERT IGNORE INTO user (email, fName, lName, section) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("ssss", $email, $fName, $lName, $section);
+if (str_ends_with($email, '@ilstu.com')) {
+    echo "'$email' ends with '@ilstu.com'.";
+    // Bind parameters and prepare statement
+    $stmt = $conn->prepare("INSERT IGNORE INTO user (email, fName, lName, section) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $email, $fName, $lName, $section);
 
-// Execute query
-if ($stmt->execute()) {
-    echo "User added successfully!";
+    // Execute query
+    if ($stmt->execute()) {
+        echo "User added successfully!";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    // Close
+    $stmt->close();
+    $conn->close();
 } else {
-    echo "Error: " . $stmt->error;
+    echo "'$email' does not end with '@ilstu.com'.\n";
 }
 
-// Close
-$stmt->close();
-$conn->close();
+
 
 ?>

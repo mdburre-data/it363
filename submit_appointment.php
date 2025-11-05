@@ -57,7 +57,7 @@ if ($result && $row = $result->fetch_assoc()) {
 
 
 // Bind parameters and prepare update statement
-$stmt = $conn->prepare("UPDATE appointments SET email = ?, reason = ?, is_scheduled = TRUE WHERE date = ? AND time = ?");
+$stmt = $conn->prepare("UPDATE appointments SET email = ?, reason = ?, is_scheduled = TRUE WHERE app_date = ? AND app_time = ?");
 $stmt->bind_param("ssss", $email, $reason, $date, $time_slot);
 
 // Execute query
