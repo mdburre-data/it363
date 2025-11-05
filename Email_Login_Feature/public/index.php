@@ -1,5 +1,7 @@
 <?php
 declare(strict_types=1);
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 session_start();
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../config.php';
@@ -17,7 +19,7 @@ function userEmail(): ?string { return $_SESSION['user_email'] ?? null; }
 
 // Get user info from database
 function fetchUser(PDO $pdo, string $email): ?array {
-    $st = $pdo->prepare("SELECT email, fname, lname, section FROM users WHERE email = :e");
+    $st = $pdo->prepare("SELECT email, fname, lname, section FROM user WHERE email = :e");
     $st->execute([':e' => $email]);
     $u = $st->fetch();
     return $u ?: null;
@@ -39,7 +41,7 @@ if ($action === 'request_code' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = 'Please enter a valid email address.';
     } else {
-        $pdo->prepare("INSERT OR IGNORE INTO users (email) VALUES (:email)")
+        $pdo->prepare("INSERT IGNORE INTO user (email) VALUES (:email)")
             ->execute([':email' => $email]);
 
         $code = (string)random_int(100000, 999999);
@@ -126,7 +128,7 @@ if ($action === 'save_profile' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($section === '') $errors[] = 'IT168 Section is required.';
 
     if (!$errors) {
-        $pdo->prepare("UPDATE users SET fname = :fn, lname = :ln, section = :sec WHERE email = :e")
+        $pdo->prepare("UPDATE user SET fname = :fn, lname = :ln, section = :sec WHERE email = :e")
             ->execute([':fn' => $fname, ':ln' => $lname, ':sec' => $section, ':e' => userEmail()]);
         header('Location: ' . APP_URL . '/');
         exit;
@@ -327,7 +329,7 @@ a.link:hover { text-decoration:underline; }
         <div>
           <strong>Signed in as</strong><br><?= h($u['email'] ?? userEmail() ?? '') ?>
         </div>
-        <div><a class="link" href="?action=logout">Log out</a></div>
+        <div><a class="link" href="/../IT363">Log out</a></div>
       </div>
     <?php endif; ?>
   </section>

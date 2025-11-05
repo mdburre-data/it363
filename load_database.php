@@ -15,7 +15,7 @@ if ($conn->connect_error) {
 // Create database if not exists
 $sql = "CREATE DATABASE IF NOT EXISTS tutoring_center";
 if ($conn->query($sql) === TRUE) {
-    echo "Creating Database 'tutoring_center'<br>";
+    // echo "Creating Database 'tutoring_center'<br>";
 } else {
     die("Error creating database: " . $conn->error);
 }
@@ -34,7 +34,7 @@ $sql = "CREATE TABLE IF NOT EXISTS scheduling_hours (
     end_time TIME NOT NULL
 )";
 if ($conn->query($sql) === TRUE) {
-    echo "Creating Table 'scheduling_hours'<br>";
+    // echo "Creating Table 'scheduling_hours'<br>";
 } else {
     die("Error creating table: " . $conn->error);
 }
@@ -52,12 +52,12 @@ if ($row['count'] == 0) {
         (6, '00:00:00','00:00:00'),
         (7, '00:00:00','00:00:00')";
     if ($conn->query($sql) === TRUE) {
-        echo "Inserted 5 example scheduling hours.<br>";
+        // echo "Inserted 5 example scheduling hours.<br>";
     } else {
-        echo "Error inserting data: " . $conn->error;
+        // echo "Error inserting data: " . $conn->error;
     }
 } else {
-    echo "Scheduling hours table already has data, skipping insert.<br>";
+    // echo "Scheduling hours table already has data, skipping insert.<br>";
 }
 
 // Create DATES table if not exists
@@ -69,7 +69,7 @@ $sql = "CREATE TABLE IF NOT EXISTS dates (
     foreign key (day_of_week) references scheduling_hours(day_of_week)
 )";
 if ($conn->query($sql) === TRUE) {
-    echo "Creating Table 'dates'<br>";
+    // echo "Creating Table 'dates'<br>";
 } else {
     die("Error creating table: " . $conn->error);
 }
@@ -87,12 +87,12 @@ if ($row['count'] == 0) {
         ('2025-10-29', 1)";
 
     if ($conn->query($sql) === TRUE) {
-        echo "Inserted 5 example dates.<br>";
+        // echo "Inserted 5 example dates.<br>";
     } else {
-        echo "Error inserting data: " . $conn->error;
+        // echo "Error inserting data: " . $conn->error;
     }
 } else {
-    echo "Dates table already has data, skipping insert.<br>";
+    // echo "Dates table already has data, skipping insert.<br>";
 }
 
 // Create USER table if not exists
@@ -105,7 +105,7 @@ $sql = "CREATE TABLE IF NOT EXISTS user (
     activated BOOLEAN DEFAULT TRUE
 )";
 if ($conn->query($sql) === TRUE) {
-    echo "Creating Table 'user'<br>";
+    // echo "Creating Table 'user'<br>";
 } else {
     die("Error creating table: " . $conn->error);
 }
@@ -122,12 +122,12 @@ if ($row['count'] == 0) {
         ('doom@ilstu.com', 'Doom', 'Guy', '0'),
         ('halo@ilstu.com', 'Master', 'Chief', '-5')";
     if ($conn->query($sql) === TRUE) {
-        echo "Inserted 5 example users.<br>";
+        // echo "Inserted 5 example users.<br>";
     } else {
-        echo "Error inserting data: " . $conn->error;
+        // echo "Error inserting data: " . $conn->error;
     }
 } else {
-    echo "User table already has data, skipping insert.<br>";
+    // echo "User table already has data, skipping insert.<br>";
 }
 
 // Create APPOINTMENTS table if not exists
@@ -144,7 +144,7 @@ $sql = "CREATE TABLE IF NOT EXISTS appointments (
     FOREIGN KEY (app_date) REFERENCES dates(date_description)
 )";
 if ($conn->query($sql) === TRUE) {
-    echo "Creating Table 'appointments'<br>";
+    // echo "Creating Table 'appointments'<br>";
 } else {
     die("Error creating table: " . $conn->error);
 }
@@ -161,12 +161,12 @@ if ($row['count'] == 0) {
         ('doom@ilstu.com', '2025-10-28', '10:30:00', TRUE, 'Demon containment advice'),
         ('halo@ilstu.com', '2025-10-29', '09:00:00', TRUE, 'Strategy session')";
     if ($conn->query($sql) === TRUE) {
-        echo "Inserted 5 example appointments.<br>";
+        // echo "Inserted 5 example appointments.<br>";
     } else {
-        echo "Error inserting data: " . $conn->error;
+        // echo "Error inserting data: " . $conn->error;
     }
 } else {
-    echo "Appointments table already has data, skipping insert.<br>";
+    // echo "Appointments table already has data, skipping insert.<br>";
 }
 
 // Create Login_Codes table if not exists
@@ -176,14 +176,13 @@ $sql = "CREATE TABLE IF NOT EXISTS login_codes (
     code_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     used_at TIMESTAMP NULL DEFAULT NULL,
-    expire_ats TIMESTAMP NOT NULL,
-    FOREIGN KEY (email) REFERENCES user(email),
-    FOREIGN KEY (app_date) REFERENCES dates(date_description)
+    expires_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (email) REFERENCES user(email)
 )";
 if ($conn->query($sql) === TRUE) {
-    echo "Creating Table 'appointments'<br>";
+    // echo "Creating Table 'appointments'<br>";
 } else {
-    die("Error creating table: " . $conn->error);
+    // die("Error creating table: " . $conn->error);
 }
 
 
