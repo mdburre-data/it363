@@ -257,7 +257,7 @@ a.link:hover { text-decoration:underline; }
     <section class="left">
       <h1 class="welcome">Welcome!</h1>
       <p>Sign in with a one-time code delivered to your email</p>
-      <img class="isu-logo" src="/assets/isu.png" alt="Illinois State University">
+      <img class="isu-logo" src="assets/isu.png" alt="Illinois State University">
     </section>
   <?php endif; ?>
 
