@@ -152,6 +152,7 @@
         <div class="eyebrow">Flexible</div>
         <h3>Pick your time</h3>
         <p>Choose an open slot that fits your week. Cancel up to 24 hours before.</p>
+        <div id="tutoringHoursOutput"></div>
       </article>
       <article class="tile">
         <div class="eyebrow">Fast</div>
@@ -164,4 +165,38 @@
   <footer>
     <div>© <span id="year"></span> Illinois State University – IT 168 Tutoring Center</div>
   </footer>
+
+  <script>
+    // Fetch and display tutoring hours on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      fetch('get_hours.php')
+        .then(response => response.json())
+        .then(data => {
+          console.log("Server returned:", data);
+
+          let hoursHTML = '<ul>';
+
+          // `data` is already an array
+          data.forEach(row => {
+            // Convert numeric day to weekday name
+            const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const dayName = days[parseInt(row.day_of_week) % 7]; // `% 7` ensures it wraps correctly
+
+            // Format hours nicely
+            const start = row.start_time === "00:00:00" && row.end_time === "00:00:00"
+              ? "Closed"
+              : `${row.start_time.slice(0,5)} - ${row.end_time.slice(0,5)}`;
+
+            hoursHTML += `<li>${dayName}: ${start}</li>`;
+          });
+
+          hoursHTML += '</ul>';
+          document.getElementById('tutoringHoursOutput').innerHTML = hoursHTML;
+        })
+        .catch(error => {
+          document.getElementById('tutoringHoursOutput').innerHTML =
+            'Error loading hours: ' + error;
+        });
+    });
+  </script>
 </html>
