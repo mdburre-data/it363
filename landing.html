@@ -31,6 +31,7 @@
       background: var(--isu-white);
       border-bottom: 1px solid #e9e9ec;
       position: sticky; top: 0; z-student_page: 20;
+      z-index: 999;
     }
     .brand {
       display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .3px;
@@ -105,7 +106,7 @@
     }
   </style>
 </head>
-<<<<<<< HEAD:index.html
+
 <body>
   <header class="topbar" role="banner">
     <div class="brand" aria-label="Illinois State University – IT 168 Tutoring">
@@ -118,7 +119,7 @@
     <nav class="nav" aria-label="Primary">
       <a href="#about">About</a>
       <a href="#how">How it works</a>
-      <a href="student_page.html" class="cta" aria-label="Book now and go to scheduler">Book Now</a>
+      <a href="student_page.html" class="cta" aria-label="Log in and go to admin/student">Login</a>
     </nav>
   </header>
 
@@ -127,7 +128,7 @@
       <div>
         <h1 id="heroTitle" class="headline">Master IT 168 with free tutoring</h1>
         <p class="subhead">Get one‑on‑one help from peer tutors. Simple scheduling. Zero hassle. Built for Redbirds.</p>
-        <a class="cta" href="student_page.html" role="button">Book Now</a>
+        <a class="cta" href="student_page.html" role="button">login</a>
       </div>
       <div class="gallery" aria-label="Campus and tutoring photos">
         <figure class="card">
@@ -163,183 +164,4 @@
   <footer>
     <div>© <span id="year"></span> Illinois State University – IT 168 Tutoring Center</div>
   </footer>
-=======
-<body style="font-family: Arial, Helvetica, sans-serif;">
-  <p><a href="debugging_admin.html">View Admin Page</a></p>
-  <h2>Student Sign Up</h2>
-  <form id="studentForm" method="POST" onsubmit="userCreationHandler(event)">
-  <label for="email">Email:</label>
-  <input type="email" id="email" name="email" required><br><br>
-  <label for="fName">First Name:</label>
-  <input type="text" id="fName" name="fName" required><br><br>
-  <label for="lName">Last Name:</label>
-  <input type="text" id="lName" name="lName" required><br><br>
-  <label for="section">Section:</label>
-  <select id="section" name="section" required>
-    <option value="1">Section 1</option>
-    <option value="2">Section 2</option>
-  </select><br>
-  <button type="submit">Submit</button>
-  <div id="userOutput" style="margin-top:20px;"></div>
-
-  <h2>Tutoring Hours (Home page):<br></h2>
-  <div id="tutoringHoursOutput"></div>
-
-  <h1>Appointment Registration</h1>
-  </form>
-    <h2>Check Appointment Date</h2>
-    <form id="dateForm" method="POST" onsubmit="timeHandler(event)">
-    <label for="date">Date:</label>
-    <input type="date" id="date" name="date" required><br><br>
-    <button type="submit">Submit</button>
-    </form>
-    <div id="buttonContainer" style="margin-top:20px;"></div>
-
-    <h2>Appointment Details</h2>
-    <form id="appointmentForm" method="POST" onsubmit="handleSubmit(event)">
-    <label for="email">Student Email:</label>
-    <input type="email" id="email" name="email" required><br><br>
-    <label for="reason">Reason for Appointment:</label>
-    <input type="text" id="reason" name="reason" required><br><br>
-      
-    <button type="submit">Submit</button>
-  </form>
->>>>>>> upstream/main:debugging_home.html
-
-  <script>
-    // Set current year in footer
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
-</body>
-<<<<<<< HEAD:index.html
 </html>
-=======
-
-<script>
-
-// Fetch and display tutoring hours on page load
-document.addEventListener('DOMContentLoaded', function() {
-  fetch('get_hours.php')
-    .then(response => response.json())
-    .then(data => {
-      console.log("Server returned:", data);
-
-      let hoursHTML = '<ul>';
-
-      // `data` is already an array
-      data.forEach(row => {
-        // Convert numeric day to weekday name
-        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const dayName = days[parseInt(row.day_of_week) % 7]; // `% 7` ensures it wraps correctly
-
-        // Format hours nicely
-        const start = row.start_time === "00:00:00" && row.end_time === "00:00:00"
-          ? "Closed"
-          : `${row.start_time.slice(0,5)} - ${row.end_time.slice(0,5)}`;
-
-        hoursHTML += `<li>${dayName}: ${start}</li>`;
-      });
-
-      hoursHTML += '</ul>';
-      document.getElementById('tutoringHoursOutput').innerHTML = hoursHTML;
-    })
-    .catch(error => {
-      document.getElementById('tutoringHoursOutput').innerHTML =
-        'Error loading hours: ' + error;
-    });
-});
-
-
-
-  // Create user submission handler
-  function userCreationHandler(event) {
-   event.preventDefault(); 
-
-    const form = event.target;
-    const formData = new FormData(form);
-
-    fetch("addUser.php", {  
-    method: "POST",
-    body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-      //Using the JSON data returned from addUser.php, show radio buttons for available time slots
-      userOutputHTML = data;
-      document.getElementById('userOutput').innerHTML = userOutputHTML;
-    })
-    .catch(error => {
-      document.getElementById('userOutput').innerHTML = 'Error: ' + error;
-    });
-  }
-
-  // Handle date selection submission
-  function timeHandler(event) {
-   event.preventDefault(); 
-
-    const form = event.target;
-    const formData = new FormData(form);
-
-    fetch("get_available.php", {  
-    method: "POST",
-    body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      //Using the JSON data returned from get_available.php, show radio buttons for available time slots
-      buttonContainerHTML = '';
-      for (let i = 0; i < data.available_slots.length; i++) {
-        buttonContainerHTML += `<input type=radio name="time_slot" value="${data.available_slots[i]}">${data.available_slots[i]}</input>`;
-      }
-      document.getElementById('buttonContainer').innerHTML = buttonContainerHTML;
-    })
-    .catch(error => {
-      document.getElementById('buttonContainer').innerHTML = 'Error: ' + error;
-    });
-  }
-
-  // Handle primary form submission
-  function handleSubmit(event) {
-      event.preventDefault();
-
-    // Combine data from both forms into one FormData object
-    const appointmentForm = document.getElementById('appointmentForm');
-    const formData = new FormData(appointmentForm);
-    const dateForm = document.getElementById('dateForm');
-    const dateFormData = new FormData(dateForm);
-    
-    // Append date and time to appointment form data
-    formData.append('date', dateFormData.get('date'));
-    formData.append('time_slot', document.querySelector('input[name="time_slot"]:checked').value);
-    const form = appointmentForm;
-
-    // Submit the form via fetch so the page doesn't navigate away
-    fetch("submit_appointment.php", {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById('output').innerHTML = data;
-    })
-    .catch(error => {
-      document.getElementById('output').innerHTML = 'Error: ' + error;
-    });
-  }
-
-// Function to call PHP scripts
-function callPhp(scriptName) {
-    fetch(scriptName)
-      .then(response => response.text())
-      .then(data => {
-        // Instead of alert, inject result into #output
-        document.getElementById("output").innerHTML = data;
-      })
-      .catch(error => {
-        document.getElementById("output").innerHTML = "Error: " + error;
-      });
-}
-
-</script>
-</html>
->>>>>>> upstream/main:debugging_home.html
