@@ -16,10 +16,11 @@ define('SMTP_FROM', 'ILSTU.TutoringCenter@gmail.com');
 define('SMTP_FROM_NAME', 'Tutoring Center');
 define('SMTP_SECURE', 'tls');
 
+// --- MySQL Database Settings ---
 define('DB_DSN', 'mysql:host=localhost:3306;dbname=tutoring_center;charset=utf8mb4');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-// define('APP_URL', 'http://localhost/IT363/Email_Login_Feature/public'); // adjust as needed
+
 
 // If you prefer MySQL, comment the SQLite line above and use something like:
 // define('DB_DSN', 'mysql:host=127.0.0.1;dbname=app;charset=utf8mb4');
