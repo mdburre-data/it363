@@ -56,7 +56,7 @@ $sql = <<<SQL
 SELECT dates.day_of_week,
        COALESCE(dates.start_time, scheduling_hours.start_time) AS start_time,
        COALESCE(dates.end_time, scheduling_hours.end_time) AS end_time
-FROM dates
+FROM dates 
 LEFT JOIN scheduling_hours ON dates.day_of_week = scheduling_hours.day_of_week
 WHERE dates.date_description = '$dateStr'
 SQL;
