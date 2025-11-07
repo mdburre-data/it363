@@ -21,4 +21,6 @@ Admin page:
         - This has been implemented. Probably need to add additional "is_blocked" variable to track if date is
         actually blocked off or just a weekend
     Block off appointments
+
+We've changed so much
     
