@@ -176,7 +176,7 @@ $sql = "CREATE TABLE IF NOT EXISTS login_codes (
     code_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     used_at TIMESTAMP NULL DEFAULT NULL,
-    expires_at TIMESTAMP NOT NULL,
+    expires_at DATETIME NOT NULL,
     FOREIGN KEY (email) REFERENCES user(email)
 )";
 if ($conn->query($sql) === TRUE) {

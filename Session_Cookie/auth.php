@@ -17,14 +17,14 @@ function endSession($cookieName) {
 // Check if cookie exists
 if (!isset($_COOKIE[$cookieName]) || !isset($_SESSION['token'])) {
     endSession($cookieName);
-    header("Location: login.php"); // redirect to login page
+    header("Location: Email_Login_Feature/public/index.php"); // redirect to login page
     exit();
 }
 
 // Validate that cookie matches session token
 if ($_COOKIE[$cookieName] !== $_SESSION['token']) {
     endSession($cookieName);
-    header("Location: login.php");
+    header("Location: Email_Login_Feature/public/index.php");
     exit();
 }
 
