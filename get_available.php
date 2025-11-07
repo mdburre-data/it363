@@ -12,6 +12,9 @@ $user = "root";
 $pass = "";
 $dbname = "tutoring_center";
 
+$today = new DateTime();
+
+
 // Connect
 $conn = new mysqli($host, $user, $pass, $dbname);
 if ($conn->connect_error) {
