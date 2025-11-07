@@ -73,7 +73,7 @@ $end_time = $row['end_time'];
 $check = $conn->query("SELECT COUNT(*) AS count FROM appointments WHERE app_date = '$date'");
 $row = $check->fetch_assoc();
 if ($row['count'] == 0) {
-    $conn->query("INSERT INTO dates (date_description, day_of_week) VALUES ('$date', $dayOfWeek)");
+    $conn->query("INSERT IGNORE INTO dates (date_description, day_of_week) VALUES ('$date', $dayOfWeek)");
     // Divide hours into 30 min slots
     $startDateTime = new DateTime($date . ' ' . $start_time);
     $endDateTime   = new DateTime($date . ' ' . $end_time);
