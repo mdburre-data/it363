@@ -118,6 +118,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = event.target;
     const formData = new FormData(form);
 
+    console.log("Date submitted:", formData.get('date'));
+
     fetch("get_available.php", {  
     method: "POST",
     body: formData
@@ -125,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
       //Using the JSON data returned from get_available.php, show radio buttons for available time slots
+      console.log("Available time slots:", data.available_slots); 
       buttonContainerHTML = '';
       for (let i = 0; i < data.available_slots.length; i++) {
         buttonContainerHTML += `<input type=radio name="time_slot" value="${data.available_slots[i]}">${data.available_slots[i]}</input>`;
