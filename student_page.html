@@ -441,13 +441,18 @@ function callPhp(scriptName) {
           console.log("Available time slots:", data.available_slots);
           let buttonContainerHTML = '';
 
-          for (let i = 0; i < data.available_slots.length; i++) {
+                try {
+         for (let i = 0; i < data.available_slots.length; i++) {
             const slot = data.available_slots[i];
             buttonContainerHTML += `
               <label>
                 <input type="radio" name="time_slot" value="${slot}"> ${slot}
               </label>`;
           }
+      } catch (error) {
+        console.error("Error processing available slots:", error);
+        buttonContainerHTML = "Can't load available time slots, please ensure a valid date is selected.";
+      }  
 
           if (data.available_slots.length === 0) {
             buttonContainerHTML = "No available time slots for this date.";
