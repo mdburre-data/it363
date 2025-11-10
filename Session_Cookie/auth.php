@@ -1,5 +1,4 @@
 <?php
-// Session_Cookie/auth.php
 declare(strict_types=1);
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -24,7 +23,7 @@ function endSession(string $cookieName): void {
     }
 }
 
-/** Create/refresh cookie after successful auth */
+// Create/refresh cookie after successful auth
 function ensureAuthCookie(string $cookieName, int $inactivity): void {
     if (session_status() !== PHP_SESSION_ACTIVE) {
         session_start();
@@ -42,7 +41,7 @@ function ensureAuthCookie(string $cookieName, int $inactivity): void {
     ]);
 }
 
-/** Gate pages that require an existing, valid cookie */
+// Gate pages that require an existing, valid cookie
 function requireAuthOrRedirect(string $cookieName, int $inactivity, string $loginUrl): void {
     if (!isset($_COOKIE[$cookieName]) || !isset($_SESSION['token'])) {
         endSession($cookieName);

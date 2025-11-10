@@ -10,7 +10,7 @@ ini_set('display_errors', '1');
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../config.php';
 
-// Determine mode early (before rendering)
+// Determine mode early (before rendering the page)
 $mode = $_GET['mode'] ?? ($_POST['mode'] ?? 'login');
 
 // Bring in cookie helpers
