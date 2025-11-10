@@ -1,16 +1,21 @@
 <?php
-session_start();
+// Session_Cookie/logout.php
+declare(strict_types=1);
+if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 
-$cookieName = 'auth_token';
+$COOKIE_NAME = 'auth_token';
 
-// Delete cookie
-setcookie($cookieName, '', time() - 3600, '/');
-
-// End session
+$_SESSION = [];
 session_unset();
 session_destroy();
 
-// Redirect to login page
-header("Location: login.php?logged_out=1");
-exit();
-?>
+setcookie($COOKIE_NAME, '', [
+    'expires'  => time() - 3600,
+    'path'     => '/',
+    'secure'   => !empty($_SERVER['HTTPS']),
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+
+header('Location: /it363/Email_Login_Feature/public/index.php?mode=login&logged_out=1');
+exit;

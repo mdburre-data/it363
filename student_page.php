@@ -1,3 +1,20 @@
+<?php
+// student_page.php
+declare(strict_types=1);
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+require_once __DIR__ . '/Session_Cookie/auth.php';
+
+// If not authenticated, send them back to your login UI
+requireAuthOrRedirect(
+    $COOKIE_NAME,
+    $INACTIVITY,
+    '/it363/index.php'
+);
+?>
+
 <!--<!DOCTYPE html>
 <html lang="en">
 <head>

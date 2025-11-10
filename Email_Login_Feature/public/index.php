@@ -1,10 +1,29 @@
 <?php
 declare(strict_types=1);
+ob_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
-session_start();
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../config.php';
+
+// Determine mode early (before rendering)
+$mode = $_GET['mode'] ?? ($_POST['mode'] ?? 'login');
+
+// Bring in cookie helpers
+require_once __DIR__ . '/../../Session_Cookie/auth.php';
+
+// If authenticated and landing on dashboard, set cookie then redirect
+if ($mode === 'dashboard') {
+    ensureAuthCookie($COOKIE_NAME, $INACTIVITY);
+
+    // Redirect to the student page (absolute path from web root is safest)
+    header('Location: /it363/student_page.php');
+    exit;
+}
 
 use App\DB;
 use App\Mailer;
@@ -163,7 +182,7 @@ if (userEmail() && !profileIncomplete(fetchUser($pdo, userEmail()))) $mode = 'da
 body {
   margin:0;
   font-family: Arial, Helvetica, sans-serif;
-  background: linear-gradient(135deg, #2d2d2d, #3b3b3b);
+  background: linear-gradient(135deg, #fff, #fff);
   color: var(--white);
   min-height:100vh;
   display:flex; align-items:center; justify-content:center;
@@ -253,6 +272,24 @@ a.link:hover { text-decoration:underline; }
 </style>
 </head>
 <body>
+
+<?php
+require_once __DIR__ . '/../../Session_Cookie/auth.php';
+
+// If we’ve landed on the dashboard view, set/refresh the cookie, then go to student_page.php
+if (isset($mode) && $mode === 'dashboard') {
+    ensureAuthCookie($COOKIE_NAME, $INACTIVITY);
+
+    if (!headers_sent()) {
+        header('Location: /it363/student_page.php');
+        exit;
+    } else {
+        // Fallback in case something already printed output
+        echo '<script>location.href="/it363/student_page.php";</script>';
+        exit;
+    }
+}
+?>
 
 <div class="shell <?= ($mode === 'profile' || $mode === 'dashboard') ? 'single' : '' ?> <?= ($mode === 'dashboard') ? 'square' : '' ?>">
   <?php if ($mode === 'login' || $mode === 'verify'): ?>

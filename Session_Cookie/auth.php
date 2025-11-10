@@ -1,42 +1,70 @@
 <?php
-session_start();
+// Session_Cookie/auth.php
+declare(strict_types=1);
 
-// Cookie/session config
-$cookieName = 'auth_token';
-$inactivityLimit = 3600; // 1 hour in seconds
-
-// Function to end session and delete cookie
-function endSession($cookieName) {
-    // Delete cookie
-    setcookie($cookieName, '', time() - 3600, '/');
-    // Clear session data
-    session_unset();
-    session_destroy();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
 }
 
-// Check if cookie exists
-if (!isset($_COOKIE[$cookieName]) || !isset($_SESSION['token'])) {
-    endSession($cookieName);
-    header("Location: Email_Login_Feature/public/index.php"); // redirect to login page
-    exit();
+$COOKIE_NAME = 'auth_token';
+$INACTIVITY  = 3600; // 1 hour
+
+function endSession(string $cookieName): void {
+    setcookie($cookieName, '', [
+        'expires'  => time() - 3600,
+        'path'     => '/',
+        'secure'   => !empty($_SERVER['HTTPS']),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+    $_SESSION = [];
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_unset();
+        session_destroy();
+    }
 }
 
-// Validate that cookie matches session token
-if ($_COOKIE[$cookieName] !== $_SESSION['token']) {
-    endSession($cookieName);
-    header("Location: Email_Login_Feature/public/index.php");
-    exit();
+/** Create/refresh cookie after successful auth */
+function ensureAuthCookie(string $cookieName, int $inactivity): void {
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+    if (empty($_SESSION['token'])) {
+        $_SESSION['token'] = bin2hex(random_bytes(32));
+    }
+    $_SESSION['last_activity'] = time();
+    setcookie($cookieName, $_SESSION['token'], [
+        'expires'  => time() + $inactivity,
+        'path'     => '/',
+        'secure'   => !empty($_SERVER['HTTPS']),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
 }
 
-// Check inactivity timeout
-if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $inactivityLimit) {
-    // Inactive for over 1 hour
-    endSession($cookieName);
-    header("Location: login.php?expired=1");
-    exit();
+/** Gate pages that require an existing, valid cookie */
+function requireAuthOrRedirect(string $cookieName, int $inactivity, string $loginUrl): void {
+    if (!isset($_COOKIE[$cookieName]) || !isset($_SESSION['token'])) {
+        endSession($cookieName);
+        header("Location: {$loginUrl}");
+        exit;
+    }
+    if (hash_equals($_SESSION['token'], (string)$_COOKIE[$cookieName]) === false) {
+        endSession($cookieName);
+        header("Location: {$loginUrl}");
+        exit;
+    }
+    if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $inactivity) {
+        endSession($cookieName);
+        header("Location: {$loginUrl}?expired=1");
+        exit;
+    }
+    $_SESSION['last_activity'] = time();
+    setcookie($cookieName, $_SESSION['token'], [
+        'expires'  => time() + $inactivity,
+        'path'     => '/',
+        'secure'   => !empty($_SERVER['HTTPS']),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
 }
-
-// Update last activity timestamp and extend cookie expiry
-$_SESSION['last_activity'] = time();
-setcookie($cookieName, $_SESSION['token'], time() + $inactivityLimit, '/', '', isset($_SERVER['HTTPS']), true);
-?>

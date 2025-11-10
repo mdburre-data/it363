@@ -8,7 +8,7 @@
   <meta name="description" content="Illinois State University–style landing page for the IT 168 Tutoring Scheduler." />
   <style>
     :root {
-      --isu-red: #D50032; /* ISU Red (approx Pantone 186C) */
+      --isu-red: #D50032;
       --isu-dark: #212121;
       --isu-gray: #f4f4f5;
       --isu-white: #ffffff;
