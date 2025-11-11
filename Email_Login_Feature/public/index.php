@@ -16,13 +16,19 @@ $mode = $_GET['mode'] ?? ($_POST['mode'] ?? 'login');
 // Bring in cookie helpers
 require_once __DIR__ . '/../../Session_Cookie/auth.php';
 
-// If authenticated and landing on dashboard, set cookie then redirect
-if ($mode === 'dashboard') {
-    ensureAuthCookie($COOKIE_NAME, $INACTIVITY);
-
+// If we’ve landed on the dashboard view, set/refresh the cookie, then go to student_page.php
+if (isset($mode) && $mode === 'dashboard') {
+  ensureAuthCookie($COOKIE_NAME, $INACTIVITY);
+  if(userIsAdmin($pdo, userEmail())){
+    // Redirect to the admin page (absolute path from web root is safest)
+    header('Location: /it363/admin_page.php');
+    exit;
+  }else{
     // Redirect to the student page (absolute path from web root is safest)
     header('Location: /it363/student_page.php');
+  }
     exit;
+
 }
 
 use App\DB;
@@ -35,6 +41,15 @@ function h(string $s): string { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8')
 
 // Get logged in user email
 function userEmail(): ?string { return $_SESSION['user_email'] ?? null; }
+
+// Get if user is admin
+function userIsAdmin(PDO $pdo, string $email): ?bool {
+    $st = $pdo->prepare("SELECT  isAdmin FROM user WHERE email = :e");
+    $st->execute([':e' => $email]);
+    $u = $st->fetch();
+    return $u ? (bool)$u['isAdmin'] : null;
+}
+
 
 // Get user info from database
 function fetchUser(PDO $pdo, string $email): ?array {
@@ -278,16 +293,17 @@ require_once __DIR__ . '/../../Session_Cookie/auth.php';
 
 // If we’ve landed on the dashboard view, set/refresh the cookie, then go to student_page.php
 if (isset($mode) && $mode === 'dashboard') {
-    ensureAuthCookie($COOKIE_NAME, $INACTIVITY);
+  ensureAuthCookie($COOKIE_NAME, $INACTIVITY);
+  if(userIsAdmin($pdo, userEmail())){
+    // Redirect to the admin page (absolute path from web root is safest)
+    header('Location: /it363/admin_page.php');
+    exit;
+  }else{
+    // Redirect to the student page (absolute path from web root is safest)
+    header('Location: /it363/student_page.php');
+  }
+    exit;
 
-    if (!headers_sent()) {
-        header('Location: /it363/student_page.php');
-        exit;
-    } else {
-        // Fallback in case something already printed output
-        echo '<script>location.href="/it363/student_page.php";</script>';
-        exit;
-    }
 }
 ?>
 

@@ -371,6 +371,7 @@ function callPhp(scriptName) {
     <div>
       <p class="isu-header-title">IT 168 Tutoring Center</p>
       <p class="isu-header-subtitle">School of Information Technology · Illinois State University</p>
+      <button onclick="location.href='Session_Cookie/logout.php'">Logout</button>
     </div>
   </header>
 

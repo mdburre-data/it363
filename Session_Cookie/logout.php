@@ -16,5 +16,5 @@ setcookie($COOKIE_NAME, '', [
     'samesite' => 'Lax',
 ]);
 
-header('Location: /it363/Email_Login_Feature/public/index.php?mode=login&logged_out=1');
+header('Location: ../index.php');
 exit;

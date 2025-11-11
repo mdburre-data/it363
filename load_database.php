@@ -101,7 +101,8 @@ $sql = "CREATE TABLE IF NOT EXISTS user (
     email VARCHAR(100) NOT NULL PRIMARY KEY,
     fName VARCHAR(100) NOT NULL,
     lName VARCHAR(100) NOT NULL,
-    section VARCHAR(100) NOT NULL,
+    section VARCHAR(100),
+    isAdmin BOOLEAN DEFAULT FALSE,
     activated BOOLEAN DEFAULT TRUE
 )";
 if ($conn->query($sql) === TRUE) {
@@ -188,5 +189,5 @@ if ($conn->query($sql) === TRUE) {
 
 // Close connection
 $conn->close();
-echo "Setup complete!";
+// echo "Setup complete!";
 ?>

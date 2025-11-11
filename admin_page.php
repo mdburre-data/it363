@@ -1,3 +1,20 @@
+<?php
+declare(strict_types=1);
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+require_once __DIR__ . '/Session_Cookie/auth.php';
+
+// If not authenticated, send them back to homepage
+requireAuthOrRedirect(
+    $COOKIE_NAME,
+    $INACTIVITY,
+    '/it363/index.php'
+);
+?>
+
+
 <!--<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -464,6 +481,7 @@
     <div>
       <p class="isu-header-title">IT 168 Tutoring – Admin</p>
       <p class="isu-header-subtitle">Manage appointments and scheduling · Illinois State University</p>
+      <button onclick="location.href='Session_Cookie/logout.php'">Logout</button>
     </div>
   </header>
 
