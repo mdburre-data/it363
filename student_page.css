@@ -1,0 +1,169 @@
+:root {
+      --isu-red: #cc0000;
+      --isu-dark-red: #990000;
+      --isu-gray: #f5f5f5;
+      --isu-border: #dddddd;
+      --isu-text: #222222;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #ffffff 0%, #fafafa 40%, #f0f0f0 100%);
+      color: var(--isu-text);
+    }
+
+    /* Header */
+    .isu-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 24px;
+      background: var(--isu-red);
+      border-bottom: 4px solid var(--isu-dark-red);
+      color: #ffffff;
+    }
+
+    .isu-header img {
+      height: 52px;
+      width: auto;
+    }
+
+    .isu-header-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .isu-header-subtitle {
+      font-size: 0.9rem;
+      margin: 2px 0 0;
+      opacity: 0.9;
+    }
+
+    /* Page container */
+    .page {
+      max-width: 900px;
+      margin: 24px auto 40px;
+      padding: 0 16px;
+    }
+
+    .hero {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px 20px 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      border-left: 5px solid var(--isu-red);
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 1.8rem;
+      color: var(--isu-red);
+    }
+
+    .hero p {
+      margin: 4px 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      border: 1px solid var(--isu-border);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      color: var(--isu-dark-red);
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    input[type="date"],
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      border: 1px solid #cccccc;
+      font-size: 0.95rem;
+    }
+
+    input[type="date"]:focus,
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--isu-red);
+      box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.15);
+    }
+
+    button {
+      background: var(--isu-red);
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.16s ease, transform 0.05s ease;
+    }
+
+    button:hover {
+      background: var(--isu-dark-red);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    #tutoringHoursOutput ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 6px 0 0;
+    }
+
+    #tutoringHoursOutput li {
+      padding: 4px 0;
+      font-size: 0.95rem;
+      border-bottom: 1px dotted #e0e0e0;
+    }
+
+    #tutoringHoursOutput li:last-child {
+      border-bottom: none;
+    }
+
+    #buttonContainer {
+      margin-top: 10px;
+    }
+
+    #buttonContainer label {
+      font-weight: normal;
+      margin-bottom: 4px;
+    }
+
+    #output {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      background: var(--isu-gray);
+      border-radius: 6px;
+      padding: 10px 12px;
+      border: 1px solid #e0e0e0;
+      white-space: pre-wrap;
+    }

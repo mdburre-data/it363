@@ -1,0 +1,236 @@
+:root {
+      --isu-red: #cc0000;
+      --isu-dark-red: #990000;
+      --isu-gray: #f5f5f5;
+      --isu-border: #dddddd;
+      --isu-text: #222222;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #ffffff 0%, #fafafa 40%, #f0f0f0 100%);
+      color: var(--isu-text);
+    }
+
+    /* Header */
+    .isu-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 24px;
+      background: var(--isu-red);
+      border-bottom: 4px solid var(--isu-dark-red);
+      color: #ffffff;
+    }
+
+    .isu-header img {
+      height: 52px;
+      width: auto;
+    }
+
+    .isu-header-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .isu-header-subtitle {
+      font-size: 0.9rem;
+      margin: 2px 0 0;
+      opacity: 0.9;
+    }
+
+    .isu-header-link a {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: 1px solid rgba(255,255,255,0.85);
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+
+    .isu-header-link a:hover {
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    /* Page layout */
+    .page {
+      max-width: 1100px;
+      margin: 24px auto 40px;
+      padding: 0 16px;
+    }
+
+    .hero {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      border-left: 5px solid var(--isu-red);
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 1.8rem;
+      color: var(--isu-red);
+    }
+
+    .hero p {
+      margin: 4px 0;
+      font-size: 0.96rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+      border: 1px solid var(--isu-border);
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.04);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 1.2rem;
+      color: var(--isu-dark-red);
+    }
+
+    .card p {
+      margin: 2px 0 8px;
+      font-size: 0.94rem;
+    }
+
+    form {
+      margin-top: 8px;
+      font-size: 0.94rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    input[type="time"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 7px 9px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border: 1px solid #cccccc;
+      font-size: 0.95rem;
+    }
+
+    input[type="time"]:focus,
+    input[type="date"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--isu-red);
+      box-shadow: 0 0 0 2px rgba(204,0,0,0.15);
+    }
+
+    button {
+      background: var(--isu-red);
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      padding: 7px 14px;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.05s ease;
+      margin-top: 4px;
+    }
+
+    button:hover {
+      background: var(--isu-dark-red);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .button-secondary {
+      background: #ffffff;
+      color: var(--isu-red);
+      border: 1px solid var(--isu-red);
+      margin-right: 6px;
+    }
+
+    .button-secondary:hover {
+      background: var(--isu-red);
+      color: #ffffff;
+    }
+
+    #changeHoursOutput,
+    #output {
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: var(--isu-gray);
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+    }
+
+    /* Upcoming appointments mini calendar */
+    #upcomingAppointments {
+      margin-top: 8px;
+    }
+
+    .calendar-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .calendar-day {
+      border: 1px solid #cccccc;
+      padding: 8px 8px;
+      width: 170px;
+      border-radius: 8px;
+      text-align: left;
+      background: #fafafa;
+      font-size: 0.88rem;
+    }
+
+    .calendar-day strong {
+      font-size: 0.95rem;
+    }
+
+    .calendar-day small {
+      color: #777;
+    }
+
+    .calendar-appt {
+      margin-top: 5px;
+      padding-top: 4px;
+      border-top: 1px dashed #dddddd;
+      font-size: 0.86rem;
+    }
+
+    .calendar-none {
+      margin-top: 6px;
+      color: #999;
+      font-size: 0.86rem;
+    }

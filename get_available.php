@@ -1,5 +1,20 @@
 <?php
 
+// NEEDS TO REQUIRE STUDENT
+declare(strict_types=1);
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+require_once __DIR__ . '/Session_Cookie/auth.php';
+
+// If not authenticated, send them back to homepage
+requireAuthOrRedirect(
+    $COOKIE_NAME,
+    $INACTIVITY,
+    '/it363/index.php'
+);
+
 //
 // Returns JSON object of available appointment slots for a given date
 //
@@ -7,16 +22,9 @@
 header('Content-Type: application/json');
 
 // Database connection settings
-$host = "localhost:3306";
-$user = "root";
-$pass = "";
-$dbname = "tutoring_center";
-
-$today = new DateTime();
-
-
-// Connect
-$conn = new mysqli($host, $user, $pass, $dbname);
+require __DIR__ . '/config.php';
+// Create connection
+$conn = new mysqli('localhost', DB_USER, DB_PASS, 'tutoring_center');
 if ($conn->connect_error) {
     http_response_code(500);
     echo json_encode(['error' => 'Connection failed: ' . $conn->connect_error]);

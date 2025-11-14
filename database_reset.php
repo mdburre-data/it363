@@ -1,14 +1,10 @@
 <?php
 
 // Database connection settings
-$host = "localhost:3306";
-$user = "root";
-$pass = "";
-$dbname = "tutoring_center";
+require __DIR__ . '/config.php';
+// Create connection
+$conn = new mysqli('localhost', DB_USER, DB_PASS, 'tutoring_center');
 
-
-// Connect
-$conn = new mysqli($host, $user, $pass, $dbname);
 if ($conn->connect_error) {
     http_response_code(500);
     echo json_encode(['error' => 'Connection failed: ' . $conn->connect_error]);

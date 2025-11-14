@@ -1,17 +1,29 @@
 <?php
 
+// NEEDS TO REQUIRE ADMIN
+declare(strict_types=1);
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+require_once __DIR__ . '/Session_Cookie/auth.php';
+
+// If not authenticated, send them back to homepage
+requireAuthOrRedirect(
+    $COOKIE_NAME,
+    $INACTIVITY,
+    '/it363/index.php'
+);
+
 //
 // Returns HTML for all inputs (For debugging, will be removed) and confirmation
 //
 
 // Database connection settings
-$host = "localhost:3306";
-$user = "root";
-$pass = "";
-$dbname = "tutoring_center";
-
-// Create connection
-$conn = new mysqli($host, $user, $pass, $dbname);
+require __DIR__ . '/config.php';
+// Database connection settings 
+      // Create connection
+      $conn = new mysqli('localhost', DB_USER, DB_PASS, 'tutoring_center');
 
 // Check connection
 if ($conn->connect_error) {

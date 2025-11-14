@@ -1,7 +1,7 @@
 <?php
 
 //
-// Returns JSON object of all scheduling hours
+// Returns JSON object of all upcoming appointments for provided student
 //
 
 header('Content-Type: application/json');
@@ -17,7 +17,7 @@ if ($conn->connect_error) {
 }
 
 // Get all scheduling hours
-$sql = "SELECT day_of_week, start_time, end_time FROM scheduling_hours";
+$sql = "SELECT * FROM appointments WHERE is_scheduled IS TRUE AND app_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 2 WEEK)";
 $res = $conn->query($sql);
 if (!$res) {
     http_response_code(500);
@@ -25,11 +25,11 @@ if (!$res) {
     exit;
 }
 
-$hours = [];
+$appointments = [];
 while ($row = $res->fetch_assoc()) {
-    $hours[] = $row;
+    $appointments[] = $row;
 }
-echo json_encode($hours);
+echo json_encode($appointments);
 
 // Close
 $conn->close();

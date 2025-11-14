@@ -24,12 +24,18 @@ function endSession(string $cookieName): void {
 }
 
 // Create/refresh cookie after successful auth
-function ensureAuthCookie(string $cookieName, int $inactivity): void {
+function ensureAuthCookie(string $cookieName, int $inactivity, string $email,bool $isAdmin = false): void {
     if (session_status() !== PHP_SESSION_ACTIVE) {
         session_start();
     }
     if (empty($_SESSION['token'])) {
         $_SESSION['token'] = bin2hex(random_bytes(32));
+        $_SESSION['email'] = $email;
+        if (empty($_SESSION['isAdmin']) && $isAdmin !== null){
+            $_SESSION['isAdmin'] = $isAdmin;
+        }else if (empty($_SESSION['isAdmin'])){
+            $_SESSION['isAdmin'] = false;
+        }
     }
     $_SESSION['last_activity'] = time();
     setcookie($cookieName, $_SESSION['token'], [

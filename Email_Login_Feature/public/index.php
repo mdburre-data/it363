@@ -18,12 +18,13 @@ require_once __DIR__ . '/../../Session_Cookie/auth.php';
 
 // If we’ve landed on the dashboard view, set/refresh the cookie, then go to student_page.php
 if (isset($mode) && $mode === 'dashboard') {
-  ensureAuthCookie($COOKIE_NAME, $INACTIVITY);
   if(userIsAdmin($pdo, userEmail())){
+    ensureAuthCookie($COOKIE_NAME, $INACTIVIT, userEmail(), TRUE);
     // Redirect to the admin page (absolute path from web root is safest)
     header('Location: /it363/admin_page.php');
     exit;
   }else{
+    ensureAuthCookie($COOKIE_NAME, $INACTIVIT, userEmail());
     // Redirect to the student page (absolute path from web root is safest)
     header('Location: /it363/student_page.php');
   }
@@ -49,7 +50,6 @@ function userIsAdmin(PDO $pdo, string $email): ?bool {
     $u = $st->fetch();
     return $u ? (bool)$u['isAdmin'] : null;
 }
-
 
 // Get user info from database
 function fetchUser(PDO $pdo, string $email): ?array {
@@ -293,12 +293,13 @@ require_once __DIR__ . '/../../Session_Cookie/auth.php';
 
 // If we’ve landed on the dashboard view, set/refresh the cookie, then go to student_page.php
 if (isset($mode) && $mode === 'dashboard') {
-  ensureAuthCookie($COOKIE_NAME, $INACTIVITY);
   if(userIsAdmin($pdo, userEmail())){
+    ensureAuthCookie($COOKIE_NAME, $INACTIVITY, userEmail(), TRUE);
     // Redirect to the admin page (absolute path from web root is safest)
     header('Location: /it363/admin_page.php');
     exit;
   }else{
+    ensureAuthCookie($COOKIE_NAME, $INACTIVITY, userEmail());
     // Redirect to the student page (absolute path from web root is safest)
     header('Location: /it363/student_page.php');
   }
@@ -312,7 +313,7 @@ if (isset($mode) && $mode === 'dashboard') {
     <section class="left">
       <h1 class="welcome">Welcome!</h1>
       <p>Sign in with a one-time code delivered to your email</p>
-      <img class="isu-logo" src="assets/isu.png" alt="Illinois State University">
+      <img class="isu-logo" src="../../imgs/isu.png" alt="Illinois State University">
     </section>
   <?php endif; ?>
 

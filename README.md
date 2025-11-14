@@ -10,17 +10,11 @@ Navigate to: http://localhost/it363/ to confirm the site exists. To get find pag
 
 TODO:
 General:
-    Move php scripts into folders?
-    Clean up submit_appointments and load_database
-    Getters should return JSON objects, not HTML (change from display_ to get_)
-        OR just remake display_ to create get_ (phase them out instead of remove them)
-    "Display Appointments" should probably only return same day/future appointments
-        (For prod, not helpful for debugging)
-Admin page:
-    Block off days 
-        - This has been implemented. Probably need to add additional "is_blocked" variable to track if date is
-        actually blocked off or just a weekend
-    Block off appointments
-
-We've changed so much
+   Daily Email reminders
+   15 Minute before reminder
+Admin Page:
+   Gets "$_SESSION['email']", can now implement the forms
+   
+Student Page:  
+   Gets "$_SESSION['email']", can now implement the forms
     

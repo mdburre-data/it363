@@ -1,11 +1,8 @@
 <?php
-// Database connection settings 
-$host = "localhost:3306";
-$user = "root";
-$pass = "";
-
+// Database connection settings
+require __DIR__ . '/config.php';
 // Create connection
-$conn = new mysqli($host, $user, $pass);
+$conn = new mysqli('localhost', DB_USER, DB_PASS);
 
 // Check connection
 if ($conn->connect_error) {
