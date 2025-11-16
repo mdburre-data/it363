@@ -1,7 +1,5 @@
 <?php
 
-
-// NEEDS TO REQUIRE ADMIN
 declare(strict_types=1);
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -13,7 +11,8 @@ require_once __DIR__ . '/Session_Cookie/auth.php';
 requireAuthOrRedirect(
     $COOKIE_NAME,
     $INACTIVITY,
-    '/it363/index.php'
+    '/it363/index.php',
+    true
 );
 
 require __DIR__ . '/config.php';

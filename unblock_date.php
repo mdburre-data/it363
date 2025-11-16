@@ -12,7 +12,8 @@ require_once __DIR__ . '/Session_Cookie/auth.php';
 requireAuthOrRedirect(
     $COOKIE_NAME,
     $INACTIVITY,
-    '/it363/index.php'
+    '/it363/index.php',
+    true
 );
 
 // Database connection settings

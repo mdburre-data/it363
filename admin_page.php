@@ -10,7 +10,8 @@ require_once __DIR__ . '/Session_Cookie/auth.php';
 requireAuthOrRedirect(
     $COOKIE_NAME,
     $INACTIVITY,
-    '/it363/index.php'
+    '/it363/index.php',
+    true
 );
 
 require __DIR__ . '/config.php';
@@ -150,6 +151,18 @@ require __DIR__ . '/config.php';
 
           <div id="changeHoursOutput"></div>
         </section>
+        <details class="card">
+          <summary>Add Admin Account</summary>
+          <form action="add_admin.php" method="POST">
+            <label for="adminEmail">Email:</label>
+            <input type="email" id="adminEmail" name="adminEmail" required>
+            <label for="adminPassword">Password:</label>
+            <input type="password" id="adminPassword" name="adminPassword" required>
+            <button type="submit">Add Admin</button>
+          </form>
+          <button onclick="callPhp('add_admin.php')">Submit</button>
+          <div id="output"></div>
+        </details>
       </div>
     </section>
   </main>

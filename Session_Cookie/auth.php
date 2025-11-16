@@ -48,7 +48,8 @@ function ensureAuthCookie(string $cookieName, int $inactivity, string $email,boo
 }
 
 // Gate pages that require an existing, valid cookie
-function requireAuthOrRedirect(string $cookieName, int $inactivity, string $loginUrl): void {
+// Optional $isAdminRequired parameter to restrict access to admin users only
+function requireAuthOrRedirect(string $cookieName, int $inactivity, string $loginUrl, bool $isAdminRequired = false): void {
     if (!isset($_COOKIE[$cookieName]) || !isset($_SESSION['token'])) {
         endSession($cookieName);
         header("Location: {$loginUrl}");
@@ -62,6 +63,11 @@ function requireAuthOrRedirect(string $cookieName, int $inactivity, string $logi
     if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $inactivity) {
         endSession($cookieName);
         header("Location: {$loginUrl}?expired=1");
+        exit;
+    }
+    if ($isAdminRequired && (empty($_SESSION['isAdmin']) || $_SESSION['isAdmin'] !== true)) {
+        endSession($cookieName);
+        header("Location: {$loginUrl}");
         exit;
     }
     $_SESSION['last_activity'] = time();
