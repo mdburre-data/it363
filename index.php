@@ -15,8 +15,8 @@
       <img class="isu-logo" src="imgs/isublack.png" alt="Illinois State University" style="height: 60px;">
     </div>
     <nav class="nav" aria-label="Primary">
-      <a href="#about">About</a>
-      <a href="#how">How it works</a>
+      <!--<a href="#about">About</a>
+      <a href="#how">How it works</a>-->
       <a href="Email_Login_Feature/public/index.php" class="cta" aria-label="Log in and go to admin/student">Login</a>
     </nav>
   </header>
@@ -26,7 +26,7 @@
       <div>
         <h1 id="heroTitle" class="headline">Master IT 168 with free tutoring</h1>
         <p class="subhead">Get one‑on‑one help from peer tutors. Simple scheduling. Zero hassle. Built for Redbirds.</p>
-        <a class="cta" href="Email_Login_Feature/public/index.php" role="button">login</a>
+        <a class="cta" href="Email_Login_Feature/public/index.php" role="button">Book Now</a>
       </div>
       <div class="gallery" aria-label="Campus and tutoring photos">
         <figure class="card">
