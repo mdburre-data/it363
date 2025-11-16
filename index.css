@@ -80,9 +80,9 @@
       background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 18px 18px 22px;
       box-shadow: 0 8px 22px rgba(0,0,0,.06);
     }
-    .eyebrow { color: var(--isu-red); font-weight: 800; font-size: 12px; letter-spacing: .3px; text-transform: uppercase; }
-    .tile h3 { margin: 6px 0 8px; font-size: 18px; }
-    .tile p { margin: 0; opacity: .8; font-size: 14px; }
+    .eyebrow { color: var(--isu-red); font-weight: 800; font-size: 12px; letter-spacing: .3px; text-transform: uppercase;text-align: center; }
+    .tile h3 { margin: 6px 0 8px; font-size: 18px; text-align: center; }
+    .tile p { margin: 0; opacity: .8; font-size: 14px; text-align: center;}
 
     /* Footer */
     footer { color: #666; font-size: 13px; padding: 24px clamp(24px, 6vw, 80px); border-top: 1px solid #eee; background: #fafafa; }

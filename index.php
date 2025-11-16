@@ -38,28 +38,28 @@
       </div>
     </section>
 
-    <section id="about" class="info" aria-label="About tutoring">
+    <!--<section id="about" class="info" aria-label="About tutoring">
       <article class="tile">
         <div class="eyebrow">Focus</div>
         <h3>IT 168 Success</h3>
         <p>Targeted sessions to help you nail fundamentals and labs without stress.</p>
-      </article>
+      </article>-->
       <article class="tile">
         <div class="eyebrow">Flexible</div>
         <h3>Pick your time</h3>
         <p>Choose an open slot that fits your week. Cancel up to 24 hours before.</p>
-        <div id="tutoringHoursOutput">Loading tutoring hours...</div>
+        <div class="tile" id="tutoringHoursOutput">Loading tutoring hours...</div>
       </article>
-      <article class="tile">
+      <!--<article class="tile">
         <div class="eyebrow">Fast</div>
         <h3>2‑click booking</h3>
-        <p>See availability instantly and confirm in seconds—no emails back‑and‑forth.</p>
+        <p>See availability instantly and confirm in seconds—no emails back‑and‑forth.</p>-->
       </article>
     </section>
   </main>
 
   <footer>
-    <div>© <span id="year"></span> Illinois State University – IT 168 Tutoring Center</div>
+    <div> Illinois State University – IT 168 Tutoring Center</div>
   </footer>
 
   <script>
