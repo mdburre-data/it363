@@ -18,7 +18,6 @@ require __DIR__ . '/config.php';
 // Database connection settings 
       // Create connection
       $conn = new mysqli('localhost', DB_USER, DB_PASS, 'tutoring_center');
-      echo $_SESSION['isAdmin'];
 ?>
 
 <!DOCTYPE html>
@@ -89,7 +88,16 @@ require __DIR__ . '/config.php';
 <!-------------------------------------------------------------------------------------------->
 <!-------------------------------------------------------------------------------------------->
 <!-------------------------------------------------------------------------------------------->
-      </div>
+        <section class="card">
+          <h2>Cancel Appointment</h2>
+          <form id="cancelAppointmentForm" method="POST" onsubmit="cancelAppointment(event)">
+            <label for="appointmentId">Appointment ID to Cancel</label>
+            <input type="number" id="appointmentId" name="appointmentId" required>
+            <button type="submit">Cancel Appointment</button>
+          </form>
+          <div id="appointmentOutput"></div>
+        </section>
+        </div>
 
       <!-- Right side: controls -->
       <div>
@@ -153,15 +161,16 @@ require __DIR__ . '/config.php';
         </section>
         <details class="card">
           <summary>Add Admin Account</summary>
-          <form action="add_admin.php" method="POST">
-            <label for="adminEmail">Email:</label>
-            <input type="email" id="adminEmail" name="adminEmail" required>
-            <label for="adminPassword">Password:</label>
-            <input type="password" id="adminPassword" name="adminPassword" required>
-            <button type="submit">Add Admin</button>
+          <form onsubmit="addAdminHandler(event)" method="POST">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="fName">First Name:</label>
+            <input type="text" id="fName" name="fName" required>
+            <label for="lName">Last Name:</label>
+            <input type="text" id="lName" name="lName" required>
+            <button type="submit">Submit</button>
+            <div id="adminOutput"></div>
           </form>
-          <button onclick="callPhp('add_admin.php')">Submit</button>
-          <div id="output"></div>
         </details>
       </div>
     </section>
@@ -240,16 +249,40 @@ require __DIR__ . '/config.php';
       });
     }
 
-    // Generic output viewer
-    function callPhp(scriptName) {
-      fetch(scriptName)
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById("output").innerHTML = data;
-        })
-        .catch(error => {
-          document.getElementById("output").innerHTML = "Error: " + error;
-        });
+    // Add admin account
+    function addAdminHandler(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      fetch('add_admin.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("adminOutput").innerHTML = data;
+      })
+      .catch(error => {
+        document.getElementById("adminOutput").innerHTML = "Error: " + error;
+      });
+    }
+
+    // Cancel Appointment
+    function cancelAppointment(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      fetch('cancel_appointment.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("appointmentOutput").innerHTML = data;
+      })
+      .catch(error => {
+        document.getElementById("appointmentOutput").innerHTML = "Error: " + error;
+      });
     }
 
     // Load upcoming appointments on page load
@@ -299,7 +332,7 @@ require __DIR__ . '/config.php';
                   <div class="calendar-appt">
                     <strong>${app.app_time}</strong><br>
                     ${app.email}<br>
-                    <small>${app.reason || ""}</small>
+                    <small>${app.reason || ""}<br>ID: ${app.app_id}</small>
                   </div>
                 `;
               });

@@ -4,6 +4,23 @@
 // Returns JSON object of all upcoming appointments
 //
 
+// NEEDS TO REQUIRE ADMIN  
+declare(strict_types=1);
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+require_once __DIR__ . '/Session_Cookie/auth.php';
+
+// If not authenticated, send them back to homepage
+requireAuthOrRedirect(
+    $COOKIE_NAME,
+    $INACTIVITY,
+    '/it363/index.php',
+    true
+);
+
+
 header('Content-Type: application/json');
 
 // Database connection settings

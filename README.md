@@ -13,8 +13,6 @@ General:
    Daily Email reminders
    15 Minute before reminder
 Admin Page:
-   Gets "$_SESSION['email']", can now implement the forms
-   
+   Appointment Cancellation returns raw JSON   
 Student Page:  
-   Gets "$_SESSION['email']", can now implement the forms
     

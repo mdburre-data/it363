@@ -82,6 +82,15 @@ require __DIR__ . '/config.php';
           <!-------------------------------------------------------------------------------------------->
           <!-------------------------------------------------------------------------------------------->
           <!-------------------------------------------------------------------------------------------->
+            <section class="card">
+          <h2>Cancel Appointment</h2>
+          <form id="cancelAppointmentForm" method="POST" onsubmit="cancelAppointment(event)">
+            <label for="appointmentId">Appointment ID to Cancel</label>
+            <input type="number" id="appointmentId" name="appointmentId" required>
+            <button type="submit">Cancel Appointment</button>
+          </form>
+          <div id="appointmentOutput"></div>
+      </section>
       </div>
 
     <section class="hero">
@@ -199,6 +208,7 @@ require __DIR__ . '/config.php';
 
       const dateForm = document.getElementById('dateForm');
       const dateFormData = new FormData(dateForm);
+      formData.append('email', '<?php echo $_SESSION['email']; ?>');
 
       // Append date
       const chosenDate = dateFormData.get('date');
@@ -227,7 +237,25 @@ require __DIR__ . '/config.php';
         .catch(error => {
           document.getElementById('output').innerHTML = 'Error: ' + error;
         });
-    }
+  }
+
+    // Cancel Appointment
+    function cancelAppointment(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      fetch('cancel_appointment.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("appointmentOutput").innerHTML = data;
+      })
+      .catch(error => {
+        document.getElementById("appointmentOutput").innerHTML = "Error: " + error;
+      });
+      }
 
 
     // Load upcoming events

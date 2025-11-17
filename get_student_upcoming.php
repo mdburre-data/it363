@@ -4,6 +4,21 @@
 // Returns JSON object of all upcoming appointments for provided student
 //
 
+// NEEDS TO REQUIRE STUDENT
+declare(strict_types=1);
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+require_once __DIR__ . '/Session_Cookie/auth.php';
+
+// If not authenticated, send them back to homepage
+requireAuthOrRedirect(
+    $COOKIE_NAME,
+    $INACTIVITY,
+    '/it363/index.php'
+);
+
 header('Content-Type: application/json');
 
 // Database connection settings
@@ -17,7 +32,7 @@ if ($conn->connect_error) {
 }
 
 // Get all scheduling hours
-$sql = "SELECT * FROM appointments WHERE is_scheduled IS TRUE AND app_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 2 WEEK)";
+$sql = "SELECT * FROM appointments WHERE email = " . $_SESSION['email'] . " AND is_scheduled IS TRUE AND app_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 2 WEEK)";
 $res = $conn->query($sql);
 if (!$res) {
     http_response_code(500);
