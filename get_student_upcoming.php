@@ -32,8 +32,17 @@ if ($conn->connect_error) {
 }
 
 // Get all scheduling hours
-$sql = "SELECT * FROM appointments WHERE email = " . $_SESSION['email'] . " AND is_scheduled IS TRUE AND app_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 2 WEEK)";
-$res = $conn->query($sql);
+$stmt = $conn->prepare("
+    SELECT *
+    FROM appointments
+    WHERE email = ?
+      AND is_scheduled = TRUE
+      AND app_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+");
+
+$stmt->bind_param("s", $_SESSION['email']);
+$stmt->execute();
+$res = $stmt->get_result();
 if (!$res) {
     http_response_code(500);
     echo json_encode(['error' => 'Query failed: ' . $conn->error]);

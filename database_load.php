@@ -99,8 +99,7 @@ $sql = "CREATE TABLE IF NOT EXISTS user (
     fName VARCHAR(100) NOT NULL,
     lName VARCHAR(100) NOT NULL,
     section VARCHAR(100),
-    isAdmin BOOLEAN DEFAULT FALSE,
-    activated BOOLEAN DEFAULT TRUE
+    isAdmin BOOLEAN DEFAULT FALSE
 )";
 if ($conn->query($sql) === TRUE) {
     // echo "Creating Table 'user'<br>";

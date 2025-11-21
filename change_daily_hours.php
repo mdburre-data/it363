@@ -37,9 +37,9 @@ $startTime = trim($_POST['updatedStartTime'] ?? '');
 $endTime = trim($_POST['updatedEndTime'] ?? '');
 
 //Debug Output
-echo "Received change hours date: " . htmlspecialchars($changeHoursDate) . "<br>";
-echo "Received start time: " . htmlspecialchars($startTime) . "<br>";
-echo "Received end time: " . htmlspecialchars($endTime) . "<br>";
+// echo "Received change hours date: " . htmlspecialchars($changeHoursDate) . "<br>";
+// echo "Received start time: " . htmlspecialchars($startTime) . "<br>";
+// echo "Received end time: " . htmlspecialchars($endTime) . "<br>";
 
 //VALIDATION
 // Basic validation
@@ -69,15 +69,14 @@ $endTime = date("H:i:s", strtotime($endTime));
         $insertStmt->bind_param('siss', $changeHoursDate, $dayOfWeek, $startTime, $endTime);
         $insertStmt->execute();
         $insertStmt->close();
-        echo "Date added successfully.";
     }else {
         // If the date exists, you can handle it as needed (e.g., notify the user)
        $stmt = $conn->prepare("UPDATE dates SET start_time = ?, end_time = ? WHERE date_description = ?");
        $stmt->bind_param("sss", $startTime, $endTime, $changeHoursDate);
        $stmt->execute();
        $stmt->close();
-       echo "Date updated successfully.";
     }
+    echo "Hours for $changeHoursDate updated successfully!";
 
 // Close
 $stmt->close();

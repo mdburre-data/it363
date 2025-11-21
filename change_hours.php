@@ -36,9 +36,9 @@ $startTime = trim($_POST['startTime'] ?? '');
 $endTime = trim($_POST['endTime'] ?? '');
 
 //Debug Output
-echo "Received day of week: " . htmlspecialchars($dayOfWeek) . "<br>";
-echo "Received start time: " . htmlspecialchars($startTime) . "<br>";
-echo "Received end time: " . htmlspecialchars($endTime) . "<br>";
+// echo "Received day of week: " . htmlspecialchars($dayOfWeek) . "<br>";
+// echo "Received start time: " . htmlspecialchars($startTime) . "<br>";
+// echo "Received end time: " . htmlspecialchars($endTime) . "<br>";
 
 //VALIDATION
 // Basic validation
@@ -54,6 +54,33 @@ if ($endTime <= $startTime) {
     die("Error: End time must be after start time.");
 }
 
+switch ($dayOfWeek) {
+    case 1:
+        $dayName = "Monday";
+        break;
+    case 2:
+        $dayName = "Tuesday";
+        break;
+    case 3:
+        $dayName = "Wednesday";
+        break;
+    case 4:
+        $dayName = "Thursday";
+        break;
+    case 5:
+        $dayName = "Friday";
+        break;
+    case 6:
+        $dayName = "Saturday";
+        break;
+    case 7:
+        $dayName = "Sunday";
+        break;
+    default:
+        $dayName = "Unknown";
+        break;
+}
+
 // Convert times to a format suitable for database storage
 $startTime = date("H:i:s", strtotime($startTime));
 $endTime = date("H:i:s", strtotime($endTime));
@@ -64,7 +91,7 @@ $stmt->bind_param("sss", $startTime, $endTime, $dayOfWeek);
 
 // Execute query
 if ($stmt->execute()) {
-    echo "Time updated successfully!";
+    echo "Hours for $dayName updated successfully!";
 } else {
     echo "Error: " . $stmt->error;
 }

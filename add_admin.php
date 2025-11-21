@@ -32,9 +32,9 @@ $fName = trim($_POST['fName'] ?? '');
 $lName = trim($_POST['lName'] ?? '');
 
 //Debug Output
-echo "Received email: " . htmlspecialchars($email) . "<br>";
-echo "Received fName: " . htmlspecialchars($fName) . "<br>";
-echo "Received lName: " . htmlspecialchars($lName) . "<br>";
+// echo "Received email: " . htmlspecialchars($email) . "<br>";
+// echo "Received fName: " . htmlspecialchars($fName) . "<br>";
+// echo "Received lName: " . htmlspecialchars($lName) . "<br>";
 
 
 //VALIDATION
@@ -48,9 +48,8 @@ $result = $conn->query("SELECT * FROM user WHERE email = '$email'");
 if ($result->num_rows === 0) {
     $stmt = $conn->prepare("INSERT INTO user (email, fName, lName, isAdmin) VALUES (?, ?, ?, TRUE)");
     $stmt->bind_param("sss", $email, $fName, $lName);
-    echo "Adding new admin user...<br>";
     if ($stmt->execute()) {
-        echo "New admin user created successfully!";
+        echo "$fName $lName added as admin successfully!";
     } else {
         die("Error creating new admin user: " . $stmt->error);
     }
@@ -58,7 +57,7 @@ if ($result->num_rows === 0) {
     // Promote user to admin
     $updateResult = $conn->query("UPDATE user SET isAdmin = TRUE WHERE email = '$email' AND fName = '$fName' AND lName = '$lName'");
     if ($updateResult) {
-        echo "User promoted to admin successfully!";
+        echo "$fName $lName promoted to admin successfully!";
     } else {
         die("Error promoting user to admin: " . $conn->error);
     }

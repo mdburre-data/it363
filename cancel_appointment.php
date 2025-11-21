@@ -69,7 +69,7 @@ if ($stmt->affected_rows === 0) {
     exit;
 }
 
-echo json_encode(['success' => 'Appointment cancelled']);
+echo 'Appointment cancelled.';
 
 $stmt->close();
 $conn->close();

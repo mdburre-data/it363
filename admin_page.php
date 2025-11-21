@@ -157,7 +157,7 @@ require __DIR__ . '/config.php';
             <button type="submit">Update Daily Hours</button>
           </form>
 
-          <div id="changeHoursOutput"></div>
+          <!-- <div id="changeHoursOutput"></div> -->
         </section>
         <details class="card">
           <summary>Add Admin Account</summary>
@@ -188,10 +188,12 @@ require __DIR__ . '/config.php';
       })
       .then(response => response.text())
       .then(data => {
-        document.getElementById("changeHoursOutput").innerHTML = data;
+        // document.getElementById("changeHoursOutput").innerHTML = data;
+        alert(data);
       })
       .catch(error => {
-        document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
+        // document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
+        alert("Error: " + error);
       });
     }
 
@@ -206,10 +208,12 @@ require __DIR__ . '/config.php';
       })
       .then(response => response.text())
       .then(data => {
-        document.getElementById("changeHoursOutput").innerHTML = data;
+        alert(data);
+        // document.getElementById("changeHoursOutput").innerHTML = data;
       })
       .catch(error => {
-        document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
+        alert("Error: " + error);
+        // document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
       });
     }
 
@@ -224,10 +228,12 @@ require __DIR__ . '/config.php';
       })
       .then(response => response.text())
       .then(data => {
-        document.getElementById("changeHoursOutput").innerHTML = data;
+        alert(data);
+        // document.getElementById("changeHoursOutput").innerHTML = data;
       })
       .catch(error => {
-        document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
+        alert("Error: " + error);
+        // document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
       });
     }
 
@@ -241,11 +247,13 @@ require __DIR__ . '/config.php';
         body: formData
       })
       .then(response => response.text())
-      .then(data => {
-        document.getElementById("changeHoursOutput").innerHTML = data;
+      .then(data => { 
+        alert(data);
+        // document.getElementById("changeHoursOutput").innerHTML = data;
       })
       .catch(error => {
-        document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
+        alert("Error: " + error);
+        // document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
       });
     }
 
@@ -260,10 +268,12 @@ require __DIR__ . '/config.php';
       })
       .then(response => response.text())
       .then(data => {
-        document.getElementById("adminOutput").innerHTML = data;
+        alert(data);
+       // document.getElementById("adminOutput").innerHTML = data;
       })
       .catch(error => {
-        document.getElementById("adminOutput").innerHTML = "Error: " + error;
+        alert("Error: " + error);
+       // document.getElementById("adminOutput").innerHTML = "Error: " + error;
       });
     }
 
@@ -278,15 +288,19 @@ require __DIR__ . '/config.php';
       })
       .then(response => response.text())
       .then(data => {
-        document.getElementById("appointmentOutput").innerHTML = data;
+        alert(data);
+        loadAppointments();
+        // document.getElementById("appointmentOutput").innerHTML = data;
       })
       .catch(error => {
-        document.getElementById("appointmentOutput").innerHTML = "Error: " + error;
+        alert("Error: " + error);
+        // document.getElementById("appointmentOutput").innerHTML = "Error: " + error;
       });
     }
 
     // Load upcoming appointments on page load
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", loadAppointments);
+    function loadAppointments() {
       const today = new Date();
       const days = [];
       for (let i = 0; i < 14; i++) {
@@ -313,7 +327,8 @@ require __DIR__ . '/config.php';
 
           let calendar = '<div class="calendar-wrap">';
           days.forEach(day => {
-            const dateObj = new Date(day.date);
+          const dateObj = new Date(day.date + "T00:00:00");
+
             const dayLabel = dateObj.toLocaleDateString(undefined, {
               weekday: "short",
               month: "short",
@@ -332,7 +347,7 @@ require __DIR__ . '/config.php';
                   <div class="calendar-appt">
                     <strong>${app.app_time}</strong><br>
                     ${app.email}<br>
-                    <small>${app.reason || ""}<br>ID: ${app.app_id}</small>
+                    <small>${app.reason || ""}<br>ID: ${app.id}</small>
                   </div>
                 `;
               });
@@ -349,7 +364,7 @@ require __DIR__ . '/config.php';
         .catch(error => {
           document.getElementById("upcomingAppointments").innerHTML = "Error: " + error;
         });
-    });
+    }
   </script>
 </body>
 </html>

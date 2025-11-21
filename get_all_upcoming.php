@@ -35,7 +35,12 @@ if ($conn->connect_error) {
 }
 
 // Get all scheduling hours
-$sql = "SELECT * FROM appointments WHERE is_scheduled IS TRUE AND app_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 2 WEEK)";
+$sql = "
+    SELECT *
+    FROM appointments
+    WHERE is_scheduled = TRUE
+      AND app_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+";
 $res = $conn->query($sql);
 if (!$res) {
     http_response_code(500);
