@@ -6,17 +6,19 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 require_once __DIR__ . '/Session_Cookie/auth.php';
 
-// If not authenticated, send them back to homepage
+// Ensure user is logged in, otherwise redirect
 requireAuthOrRedirect(
     $COOKIE_NAME,
     $INACTIVITY,
-    '/it363/index.php'
+    '/it363/login.php'
 );
 
 require __DIR__ . '/config.php';
-// Database connection settings 
-      // Create connection
-      $conn = new mysqli('localhost', DB_USER, DB_PASS, 'tutoring_center');
+$conn = new mysqli('localhost', DB_USER, DB_PASS, 'tutoring_center');
+
+// Check for feedback messages in URL
+$msg = $_GET['msg'] ?? null;
+$error = $_GET['error'] ?? null;
 ?>
 
 <!DOCTYPE html>
@@ -24,317 +26,192 @@ require __DIR__ . '/config.php';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>IT 168 Tutoring Center – Welcome</title>
-  <meta name="description" content="Illinois State University–style landing page for the IT 168 Tutoring Scheduler." />
-  <link rel="stylesheet" href="student_page.css">
-
+  <title>Student Dashboard | IT 168 Tutoring</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
 </head>
 <body>
-  <!-- Header with ISU seal -->
-  <header class="isu-header">
-    <img src="imgs/ISU-Seal.png" alt="Illinois State University Seal">
-    <div>
-      <p class="isu-header-title">IT 168 Tutoring Center</p>
-      <p class="isu-header-subtitle">School of Information Technology · Illinois State University</p>
-      <button onclick="location.href='Session_Cookie/logout.php'">Logout</button>
+
+  <header class="app-header">
+    <div class="container header-inner header-grid-layout">
+      <div class="header-left">
+        <img src="imgs/isublack.png" alt="Illinois State University Seal">
+      </div>
+      <div class="header-center">
+        <div class="brand-text-center">IT 168 Tutoring Center</div>
+        <div class="portal-badge">Student Portal</div>
+      </div>
+      <div class="header-right">
+        <a href="Session_Cookie/logout.php" class="btn btn-sm btn-primary">Logout</a>
+      </div>
     </div>
   </header>
 
-  <main class="page">
+  <main class="container">
 
+    <div class="status-bar">
+      <div>
       <?php      
+      // Fetch student name for personalization
       $stmt = $conn->prepare("SELECT fName, lName FROM user WHERE email = ?");
       $stmt->bind_param("s", $_SESSION['email']);
       $stmt->execute();
       $result = $stmt->get_result();
-
-      $username = "";
-
+      $username = "Student";
       if ($row = $result->fetch_assoc()) {
           $username = $row['fName'] . " " . $row['lName'];
       }
-      // $username = rtrim($username, " "); 
-
       
       if (isset($_SESSION['token'])) {
-        $email = $_SESSION['email'];
-        echo "Welcome back, " . $username . "!";
+        echo "<h3 style='margin:0'>Welcome back, " . htmlspecialchars($username) . "!</h3>";
       } else {
         echo "Please log in.";
        }
       ?>
+      </div>
+    </div>
 
-      <section class="grid">
-      <!-- Left side: upcoming appointments + display scripts -->
-      <div>
+    <?php if ($error): ?>
+        <div class="alert alert-error mt-4">
+            <strong>Error:</strong> <?php echo htmlspecialchars($error); ?>
+        </div>
+    <?php endif; ?>
+
+    <section class="dashboard-grid">
+      <div class="main-content">
+        
         <section class="card">
-          <h2>Upcoming Appointments (Next 14 Days)</h2>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+             <h2 style="margin:0; border:none;">Your Upcoming Appointments</h2>
+          </div>
           <div id="upcomingAppointments">Loading appointments...</div>
         </section>
-          <!-------------------------------------------------------------------------------------------->
-          <!-------------------------------------------------------------------------------------------->
-          <!-------------------------------------------------------------------------------------------->
-          <!-------------------------------------------------------------------------------------------->
-          <!-------------------------------------------------------------------------------------------->
-          <!-------------------------------------------------------------------------------------------->
-          <!-------------------------------------------------------------------------------------------->
-          <!-------------------------------------------------------------------------------------------->
-          <!-------------------------------------------------------------------------------------------->
-          <!-------------------------------------------------------------------------------------------->
-          <!-------------------------------------------------------------------------------------------->
-            <section class="card">
-          <h2>Cancel Appointment</h2>
-          <form id="cancelAppointmentForm" method="POST" onsubmit="cancelAppointment(event)">
-            <label for="appointmentId">Appointment ID to Cancel</label>
-            <input type="number" id="appointmentId" name="appointmentId" required>
-            <button type="submit">Cancel Appointment</button>
+          
+        <section class="card">
+          <h2>Book an Appointment</h2>
+          <p>Select a date to check availability.</p>
+          
+          <form id="dateForm" method="POST" onsubmit="timeHandler(event)" style="display:flex; gap:12px; align-items:flex-end;">
+            <div style="flex-grow:1;">
+                <label for="date">Select Date</label>
+                <input type="date" id="date" name="date" required style="margin:0;">
+            </div>
+            <button type="submit" class="btn btn-primary">Check Availability</button>
           </form>
-          <div id="appointmentOutput"></div>
-      </section>
+          
+          <div id="buttonContainer" class="mt-4"></div>
+
+          <hr style="margin: 1.5rem 0; border:0; border-top:1px solid #eee;">
+
+          <form id="appointmentForm" method="POST" action="submit_appointment.php">
+            <input type="hidden" name="email" value="<?php echo htmlspecialchars($_SESSION['email']); ?>">
+            <input type="hidden" name="date" id="hiddenDate">
+            
+            <label for="reason">Reason for Appointment</label>
+            <input type="text" id="reason" name="reason" placeholder="Exam review, homework help, etc." required />
+            
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary">Confirm Booking</button>
+            </div>
+          </form>
+        </section>
       </div>
 
-    <section class="hero">
-      <h1>Welcome</h1>
-      <p>Use this page to check tutoring hours and register an appointment.</p>
-      <p>Step 1: Pick a date, Step 2: Choose a time, Step 3: Tell us what you need help with.</p>
-    </section>
+      <div class="sidebar">
+        <section class="card">
+          <h2>Tutoring Hours</h2>
+          <div id="tutoringHoursOutput" style="font-size:0.9rem; line-height:1.6;">Loading hours...</div>
+        </section>
 
-    <section class="card">
-      <h2>Tutoring Hours</h2>
-      <p>Weekly schedule:</p>
-      <div id="tutoringHoursOutput">Loading hours...</div>
-    </section>
-
-    <section class="card">
-      <h2>Check Appointment Date</h2>
-      <form id="dateForm" method="POST" onsubmit="timeHandler(event)">
-        <label for="date">Date</label>
-        <input type="date" id="date" name="date" required />
-        <button type="submit">See Available Times</button>
-      </form>
-      <div id="buttonContainer"></div>
-    </section>
-
-    <section class="card">
-      <h2>Appointment Details</h2>
-      <form id="appointmentForm" method="POST" onsubmit="handleSubmit(event)">
-        <label for="reason">Reason for Appointment</label>
-        <input type="text" id="reason" name="reason" placeholder="Exam review, homework help, etc." required />
-        <button type="submit">Submit Appointment</button>
-      </form>
-
-      <!-- <div id="output"></div> -->
+        <section class="card" style="background:#fff5f5; border-color:#fed7d7;">
+          <h2 style="border-bottom-color:#e53e3e; color:#c53030;">Cancel Appointment</h2>
+          <form method="POST" action="cancel_appointment.php">
+            <label for="appointmentId">Appointment ID to Cancel</label>
+            <input type="number" id="appointmentId" name="appointmentId" required>
+            <button type="submit" class="btn btn-danger" style="width:100%">Cancel Appointment</button>
+          </form>
+        </section>
+      </div>
     </section>
   </main>
 
   <script>
-
-    // Fetch and display tutoring hours on page load
     document.addEventListener('DOMContentLoaded', function () {
+      loadHours();
+      loadAppointments();
+    });
+
+    // Fetch general hours
+    function loadHours() {
       fetch('get_hours.php')
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
-          console.log("Server returned:", data);
-
-          let hoursHTML = '<ul>';
-
+          let html = '<ul style="list-style:none; padding:0; margin:0;">';
           data.forEach(row => {
             const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             const dayName = days[parseInt(row.day_of_week) % 7];
-
-            const start = row.start_time === "00:00:00" && row.end_time === "00:00:00"
-              ? "Closed"
-              : `${row.start_time.slice(0, 5)} - ${row.end_time.slice(0, 5)}`;
-
-            hoursHTML += `<li>${dayName}: ${start}</li>`;
+            const start = row.start_time === "00:00:00" ? "<span style='color:#999'>Closed</span>" : `${row.start_time.slice(0, 5)} - ${row.end_time.slice(0, 5)}`;
+            html += `<li style="display:flex; justify-content:space-between; border-bottom:1px dotted #eee; padding:6px 0;"><strong>${dayName}</strong> <span>${start}</span></li>`;
           });
-
-          hoursHTML += '</ul>';
-          document.getElementById('tutoringHoursOutput').innerHTML = hoursHTML;
-        })
-        .catch(error => {
-          document.getElementById('tutoringHoursOutput').innerHTML =
-            'Error loading hours: ' + error;
-        });
-    });
-
-    // Handle date selection submission
-    function timeHandler(event) {
-      event.preventDefault();
-
-      const form = event.target;
-      const formData = new FormData(form);
-
-      console.log("Date submitted:", formData.get('date'));
-
-      fetch("get_available.php", {
-        method: "POST",
-        body: formData
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log("Available time slots:", data.available_slots);
-          let buttonContainerHTML = '';
-
-                try {
-         for (let i = 0; i < data.available_slots.length; i++) {
-            const slot = data.available_slots[i];
-            buttonContainerHTML += `
-              <label>
-                <input type="radio" name="time_slot" value="${slot}"> ${slot}
-              </label>`;
-          }
-      } catch (error) {
-        console.error("Error processing available slots:", error);
-        buttonContainerHTML = "Can't load available time slots, please ensure a valid date is selected.";
-      }  
-
-          if (data.available_slots.length === 0) {
-            buttonContainerHTML = "No available time slots for this date.";
-          }
-
-          document.getElementById('buttonContainer').innerHTML = buttonContainerHTML;
-        })
-        .catch(error => {
-          document.getElementById('buttonContainer').innerHTML = 'Error: ' + error;
+          document.getElementById('tutoringHoursOutput').innerHTML = html + '</ul>';
         });
     }
 
-    // Handle appointment submission
-    function handleSubmit(event) {
-      event.preventDefault();
-
-      const appointmentForm = document.getElementById('appointmentForm');
-      const formData = new FormData(appointmentForm);
-
-      const dateForm = document.getElementById('dateForm');
-      const dateFormData = new FormData(dateForm);
-      formData.append('email', '<?php echo $_SESSION['email']; ?>');
-
-      // Append date
-      const chosenDate = dateFormData.get('date');
-      if (!chosenDate) {
-        // document.getElementById('output').innerHTML = "Please choose a date first.";
-        alert("Please choose a date first.");
-        return;
-      }
-      formData.append('date', chosenDate);
-
-      // Append time slot
-      const timeRadio = document.querySelector('input[name="time_slot"]:checked');
-      if (!timeRadio) {
-        // document.getElementById('output').innerHTML = "Please select a time slot.";
-        alert("Please select a time slot.");
-        return;
-      }
-      formData.append('time_slot', timeRadio.value);
-
-      fetch("submit_appointment.php", {
-        method: 'POST',
-        body: formData
-      })
-        .then(response => response.text())
-        .then(data => {
-          alert(data);
-          window.location.reload();
-          // document.getElementById('output').innerHTML = data;
-        })
-        .catch(error => {
-          alert("Error: " + error);
-          // document.getElementById('output').innerHTML = 'Error: ' + error;
-        });
-  }
-
-    // Cancel Appointment
-    function cancelAppointment(event) {
+    // AJAX Fetch for Time Slots
+    function timeHandler(event) {
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      fetch('cancel_appointment.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.text())
-      .then(data => {
-        alert(data);
-        loadAppointments();
-        // document.getElementById("appointmentOutput").innerHTML = data;
-      })
-      .catch(error => {
-        alert("Error: " + error);
-        //document.getElementById("appointmentOutput").innerHTML = "Error: " + error;
-      });
-      }
+      
+      // Update hidden date input
+      document.getElementById('hiddenDate').value = formData.get('date');
 
-
-    // Load upcoming events
-    document.addEventListener("DOMContentLoaded", loadAppointments);
-    function loadAppointments() {
-
-      const today = new Date();
-      const days = [];
-      for (let i = 0; i < 14; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() + i);
-        const formattedDate = date.toISOString().split("T")[0]; // YYYY-MM-DD
-        days.push({
-          date: formattedDate,
-          appointments: []
-        });
-      }
-
-      fetch("get_student_upcoming.php")
-        .then(response => response.json())
+      fetch("get_available.php", { method: "POST", body: formData })
+        .then(r => r.json())
         .then(data => {
-          if (Array.isArray(data)) {
-            data.forEach(app => {
-              const match = days.find(d => d.date === app.app_date);
-              if (match) {
-                match.appointments.push(app);
-              }
-            });
+          let html = '';
+          if (data.available_slots && data.available_slots.length > 0) {
+             html += '<label>Available Slots:</label><div style="display:flex; flex-wrap:wrap; gap:8px;">';
+             data.available_slots.forEach(slot => {
+                 html += `<label style="background:var(--bg-app); padding:8px 12px; border-radius:4px; cursor:pointer; border:1px solid var(--border-color); font-weight:normal; font-size:0.9rem;">
+                            <input type="radio" name="time_slot" value="${slot}" form="appointmentForm" required> ${slot}
+                          </label>`;
+             });
+             html += '</div>';
+          } else {
+             html = '<div style="padding:10px; background:#e2e8f0; border-radius:4px; color:#4a5568;">No slots available for this date.</div>';
           }
+          document.getElementById('buttonContainer').innerHTML = html;
+        });
+    }
 
-          let calendar = '<div class="calendar-wrap">';
-          days.forEach(day => {
-          const dateObj = new Date(day.date + "T00:00:00");
-            const dayLabel = dateObj.toLocaleDateString(undefined, {
-              weekday: "short",
-              month: "short",
-              day: "numeric"
-            });
+    // Load Appointments (Hides empty days)
+    function loadAppointments() {
+      fetch("get_student_upcoming.php")
+        .then(r => r.json())
+        .then(data => {
+          if (!Array.isArray(data) || data.length === 0) {
+             document.getElementById("upcomingAppointments").innerHTML = "<div class='calendar-none'>No upcoming appointments scheduled.</div>";
+             return;
+          }
+          let html = '<div class="calendar-wrap">';
+          data.forEach(app => {
+             const dateObj = new Date(app.app_date + "T00:00:00");
+             const dayLabel = dateObj.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 
-            calendar += `
-              <div class="calendar-day">
-                <strong>${dayLabel}</strong><br>
-                <small>${day.date}</small>
+            html += `
+              <div class="calendar-appt">
+                <strong style="color:var(--primary); display:block; margin-bottom:4px; font-size:1.1rem;">${dayLabel}</strong>
+                <div style="font-size:1.2rem; font-weight:bold; margin-bottom:4px;">${app.app_time.slice(0,5)}</div>
+                <div style="font-size:0.9rem; color:var(--text-main); margin-bottom:4px;">${app.reason || "Tutoring Session"}</div>
+                <small style="color:var(--text-muted); font-family:monospace;">ID: ${app.id}</small>
+              </div>
             `;
-
-            if (day.appointments.length > 0) {
-              day.appointments.forEach(app => {
-                calendar += `
-                  <div class="calendar-appt">
-                    <strong>${app.app_time}</strong><br>
-                    ${app.email}<br>
-                    <small>${app.reason || ""}<br>ID: ${app.id}</small>
-                  </div>
-                `;
-              });
-            } else {
-              calendar += `<div class="calendar-none">No appointments</div>`;
-            }
-
-            calendar += `</div>`;
           });
-          calendar += `</div>`;
-
-          document.getElementById("upcomingAppointments").innerHTML = calendar;
-        })
-        .catch(error => {
-          document.getElementById("upcomingAppointments").innerHTML = "Error: " + error;
+          document.getElementById("upcomingAppointments").innerHTML = html + '</div>';
         });
     }
   </script>
 </body>
 </html>
-

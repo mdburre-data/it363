@@ -16,7 +16,7 @@ require_once __DIR__ . '/Session_Cookie/auth.php';
 requireAuthOrRedirect(
     $COOKIE_NAME,
     $INACTIVITY,
-    '/it363/index.php',
+    '/it363/login.php',
     true
 );
 
@@ -34,13 +34,16 @@ if ($conn->connect_error) {
     exit;
 }
 
-// Get all scheduling hours
+// Get all appointments joined with user data to show Name/Section
 $sql = "
-    SELECT *
-    FROM appointments
-    WHERE is_scheduled = TRUE
-      AND app_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+    SELECT a.*, u.fName, u.lName, u.section
+    FROM appointments a
+    JOIN user u ON a.email = u.email
+    WHERE a.is_scheduled = TRUE
+      AND a.app_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+    ORDER BY a.app_date ASC, a.app_time ASC
 ";
+
 $res = $conn->query($sql);
 if (!$res) {
     http_response_code(500);

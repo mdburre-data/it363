@@ -1,102 +1,36 @@
 <?php
-
-// NEEDS TO REQUIRE ADMIN
 declare(strict_types=1);
-
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
+if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 require_once __DIR__ . '/Session_Cookie/auth.php';
-
-// If not authenticated, send them back to homepage
-requireAuthOrRedirect(
-    $COOKIE_NAME,
-    $INACTIVITY,
-    '/it363/index.php',
-    true
-);
-
-//
-// Returns HTML for all inputs (For debugging, will be removed) and confirmation
-//
-
-// Database connection settings
+requireAuthOrRedirect($COOKIE_NAME, $INACTIVITY, '/it363/login.php', true);
 require __DIR__ . '/config.php';
-// Create connection
+
 $conn = new mysqli('localhost', DB_USER, DB_PASS, 'tutoring_center');
+if ($conn->connect_error) { die("Connection failed"); }
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Collect POST data
 $dayOfWeek = trim($_POST['dayOfWeek'] ?? '');
 $startTime = trim($_POST['startTime'] ?? '');
 $endTime = trim($_POST['endTime'] ?? '');
 
-//Debug Output
-// echo "Received day of week: " . htmlspecialchars($dayOfWeek) . "<br>";
-// echo "Received start time: " . htmlspecialchars($startTime) . "<br>";
-// echo "Received end time: " . htmlspecialchars($endTime) . "<br>";
-
-//VALIDATION
-// Basic validation
+// Error Redirect back to Settings
 if ($dayOfWeek === '' || $startTime === '' || $endTime === '') {
-    die("Error: All fields are required.");
+    header("Location: admin_page.php?view=settings&error=All fields are required"); exit;
 }
-
-if ($dayOfWeek < 1 || $dayOfWeek > 7) {
-    die("Error: Day of week must be between 1 (Monday) and 7 (Sunday).");
-}
-
 if ($endTime <= $startTime) {
-    die("Error: End time must be after start time.");
+    header("Location: admin_page.php?view=settings&error=End time must be after start time"); exit;
 }
 
-switch ($dayOfWeek) {
-    case 1:
-        $dayName = "Monday";
-        break;
-    case 2:
-        $dayName = "Tuesday";
-        break;
-    case 3:
-        $dayName = "Wednesday";
-        break;
-    case 4:
-        $dayName = "Thursday";
-        break;
-    case 5:
-        $dayName = "Friday";
-        break;
-    case 6:
-        $dayName = "Saturday";
-        break;
-    case 7:
-        $dayName = "Sunday";
-        break;
-    default:
-        $dayName = "Unknown";
-        break;
-}
-
-// Convert times to a format suitable for database storage
 $startTime = date("H:i:s", strtotime($startTime));
 $endTime = date("H:i:s", strtotime($endTime));
 
-// Bind parameters and prepare update statement
 $stmt = $conn->prepare("UPDATE scheduling_hours SET start_time = ?, end_time = ? WHERE day_of_week = ?");
 $stmt->bind_param("sss", $startTime, $endTime, $dayOfWeek);
 
-// Execute query
 if ($stmt->execute()) {
-    echo "Hours for $dayName updated successfully!";
+    // Success Redirect back to Settings
+    header("Location: admin_page.php?view=settings&msg=Hours updated successfully");
 } else {
-    echo "Error: " . $stmt->error;
+    header("Location: admin_page.php?view=settings&error=Database update failed");
 }
-
-// Close
-$stmt->close();
-$conn->close();
+$stmt->close(); $conn->close();
 ?>

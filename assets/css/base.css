@@ -1,0 +1,63 @@
+:root {
+  /* Brand Colors */
+  --primary: #CE1126; /* ISU Red */
+  --primary-dark: #A60C1E;
+  --secondary: #2C2C2C;
+  --accent: #E1E1E1;
+  
+  /* Functional Colors */
+  --bg-app: #F4F6F8; /* Light blue-gray background for dashboard feel */
+  --bg-card: #FFFFFF;
+  --text-main: #333333;
+  --text-muted: #666666;
+  --border-color: #DDE2E5;
+  --danger: #D32F2F;
+  --success: #2E7D32;
+
+  /* Spacing & Sizing */
+  --max-width: 1200px;
+  --header-height: 64px;
+  --radius: 8px; /* Modern, slightly rounded corners */
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+}
+
+/* Reset & Base Styles */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  margin: 0 0 1rem 0;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--secondary);
+}
+
+h1 { font-size: 1.875rem; }
+h2 { font-size: 1.25rem; border-bottom: 2px solid var(--primary); display: inline-block; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+p { margin-bottom: 1rem; color: var(--text-muted); }
+
+a { color: var(--primary); text-decoration: none; font-weight: 500; }
+a:hover { text-decoration: underline; }
+
+/* Utilities */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.mt-4 { margin-top: 1.5rem; }
+.mb-4 { margin-bottom: 1.5rem; }

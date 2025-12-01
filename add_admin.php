@@ -1,69 +1,34 @@
 <?php
-
-// NEEDS TO REQUIRE ADMIN
 declare(strict_types=1);
-
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
+if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 require_once __DIR__ . '/Session_Cookie/auth.php';
-
-// If not authenticated, send them back to homepage
-requireAuthOrRedirect(
-    $COOKIE_NAME,
-    $INACTIVITY,
-    '/it363/index.php',
-    true
-);
-
-// Database connection settings
+requireAuthOrRedirect($COOKIE_NAME, $INACTIVITY, '/it363/login.php', true);
 require __DIR__ . '/config.php';
-// Create connection
+
 $conn = new mysqli('localhost', DB_USER, DB_PASS, 'tutoring_center');
+if ($conn->connect_error) { die("Connection failed"); }
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Collect POST data
 $email = trim($_POST['email'] ?? '');
 $fName = trim($_POST['fName'] ?? '');
 $lName = trim($_POST['lName'] ?? '');
 
-//Debug Output
-// echo "Received email: " . htmlspecialchars($email) . "<br>";
-// echo "Received fName: " . htmlspecialchars($fName) . "<br>";
-// echo "Received lName: " . htmlspecialchars($lName) . "<br>";
-
-
-//VALIDATION
-// Basic validation
 if ($email === '' || $fName === '' || $lName === '') {
-    die("Error: All fields are required.");
+    header("Location: admin_page.php?view=settings&error=All fields are required"); exit;
 }
 
-// Check if email exists in user table
 $result = $conn->query("SELECT * FROM user WHERE email = '$email'");
 if ($result->num_rows === 0) {
     $stmt = $conn->prepare("INSERT INTO user (email, fName, lName, isAdmin) VALUES (?, ?, ?, TRUE)");
     $stmt->bind_param("sss", $email, $fName, $lName);
     if ($stmt->execute()) {
-        echo "$fName $lName added as admin successfully!";
+        header("Location: admin_page.php?view=settings&msg=New admin added successfully");
     } else {
-        die("Error creating new admin user: " . $stmt->error);
+        header("Location: admin_page.php?view=settings&error=Database error");
     }
-}else{
-    // Promote user to admin
-    $updateResult = $conn->query("UPDATE user SET isAdmin = TRUE WHERE email = '$email' AND fName = '$fName' AND lName = '$lName'");
-    if ($updateResult) {
-        echo "$fName $lName promoted to admin successfully!";
-    } else {
-        die("Error promoting user to admin: " . $conn->error);
-    }
+} else {
+    $conn->query("UPDATE user SET isAdmin = TRUE WHERE email = '$email'");
+    header("Location: admin_page.php?view=settings&msg=User promoted to Admin");
 }
 
-// Close
-$stmt->close();
 $conn->close();
 ?>

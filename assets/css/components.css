@@ -1,0 +1,216 @@
+/* components.css - Reusable UI elements */
+
+/* Header Container */
+.app-header {
+    background: var(--bg-card);
+    height: var(--header-height);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+    display: flex; /* Vertical alignment fix */
+    align-items: center;
+}
+
+/* 1. DEFAULT LAYOUT (Homepage & Login) - Uses Flexbox */
+.header-inner {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 2. DASHBOARD OVERRIDE (Student & Admin) - Uses Grid */
+/* This class is added in the PHP files for dashboards */
+.header-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* Left | Center | Right */
+    align-items: center;
+}
+
+/* Dashboard specific alignment helpers */
+.header-left { display: flex; justify-content: flex-start; align-items: center; }
+.header-center { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center; 
+    line-height: 1.1;
+}
+.header-right { display: flex; justify-content: flex-end; align-items: center; }
+
+
+/* --- Branding & Logos --- */
+
+/* Brand Text (Dashboard Title) */
+.brand-text-center {
+    font-weight: 700; 
+    font-size: 1.125rem; 
+    color: var(--secondary);
+}
+
+/* Portal Badge (Student/Admin Label) */
+.portal-badge { 
+    font-size: 0.75rem; 
+    color: var(--primary); /* ISU Red */
+    font-weight: 800; 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em;
+    background-color: rgba(206, 17, 38, 0.08);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+    display: inline-block;
+}
+
+/* Homepage Brand Wrapper */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+/* STRICT LOGO SIZING - !important overrides any browser caching issues */
+.brand img, 
+.header-left img,
+.login-logo { 
+    height: 48px !important; 
+    width: auto !important; 
+    max-width: 100%;
+    display: block;
+    object-fit: contain;
+}
+/* Exception for the login card logo which should be bigger */
+.login-card .login-logo {
+    height: 80px !important;
+}
+
+
+/* --- Cards --- */
+.card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.2s ease;
+    height: 100%; 
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.card h2 { margin-top: 0; }
+
+
+/* --- Forms --- */
+label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--secondary);
+    margin-bottom: 0.5rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    color: var(--text-main);
+    background-color: #fff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    margin-bottom: 1.25rem;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(206, 17, 38, 0.15);
+}
+
+
+/* --- Buttons --- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    text-decoration: none;
+}
+
+.btn-primary { background-color: var(--primary); color: white; }
+.btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-1px); text-decoration: none; }
+
+.btn-secondary { background-color: white; color: var(--text-main); border: 1px solid var(--border-color); }
+.btn-secondary:hover { background-color: #f9fafb; border-color: #c0c4c8; text-decoration: none; }
+
+.btn-danger { background-color: #fff; color: var(--danger); border: 1px solid var(--danger); }
+.btn-danger:hover { background-color: var(--danger); color: white; }
+
+.btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+.btn-lg { padding: 0.875rem 2rem; font-size: 1.125rem; }
+
+
+/* --- Calendar Grid Styling --- */
+.calendar-wrap {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.calendar-day {
+    background: #FAFAFA;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 10px;
+    font-size: 0.85rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.calendar-day strong {
+    display: block;
+    color: var(--primary);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 4px;
+}
+
+/* Appointment Slot inside Calendar */
+.calendar-appt {
+    background: white;
+    border-left: 4px solid var(--primary);
+    padding: 12px;
+    margin-top: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-radius: 4px;
+    border: 1px solid #eee;
+    border-left-color: var(--primary);
+}
+
+.calendar-none {
+    font-style: italic;
+    color: #999;
+    font-size: 0.9rem;
+    padding: 10px 0;
+}

@@ -10,102 +10,107 @@ require_once __DIR__ . '/Session_Cookie/auth.php';
 requireAuthOrRedirect(
     $COOKIE_NAME,
     $INACTIVITY,
-    '/it363/index.php',
+    '/it363/login.php',
     true
 );
 
 require __DIR__ . '/config.php';
-// Database connection settings 
-      // Create connection
-      $conn = new mysqli('localhost', DB_USER, DB_PASS, 'tutoring_center');
+$conn = new mysqli('localhost', DB_USER, DB_PASS, 'tutoring_center');
+
+// Handle View Logic (Default to dashboard)
+$view = $_GET['view'] ?? 'dashboard';
+
+// Check for messages
+$msg = $_GET['msg'] ?? null;
+$error = $_GET['error'] ?? null;
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>IT 168 Tutoring – Admin</title>
-  <link rel="stylesheet" href="admin_page.css">
-
- 
+  <title>Admin Dashboard | IT 168 Tutoring</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+  <style>
+      /* Local style for the settings grid layout */
+      .settings-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+          gap: 24px;
+          margin-top: 24px;
+      }
+  </style>
 </head>
 <body>
  
-  <!-- Header -->
-  <header class="isu-header">
-    <img src="imgs/ISU-Seal.png" alt="Illinois State University Seal">
-    <div>
-      <p class="isu-header-title">IT 168 Tutoring – Admin</p>
-      <p class="isu-header-subtitle">Manage appointments and scheduling · Illinois State University</p>
-      <button onclick="location.href='Session_Cookie/logout.php'">Logout</button>
+  <header class="app-header">
+    <div class="container header-inner header-grid-layout">
+      <div class="header-left">
+        <img src="imgs/isublack.png" alt="Illinois State University Seal">
+      </div>
+      <div class="header-center">
+        <div class="brand-text-center">IT 168 Tutoring Center</div>
+        <div class="portal-badge">Admin Portal</div>
+      </div>
+      <div class="header-right">
+        <a href="Session_Cookie/logout.php" class="btn btn-sm btn-primary">Logout</a>
+      </div>
     </div>
   </header>
 
-  <main class="page">
-    <section class="hero">
-      <h1>Admin Dashboard</h1>
-      <p>
-      <?php      
-      $stmt = $conn->prepare("SELECT fName, lName FROM user WHERE email = ?");
-      $stmt->bind_param("s", $_SESSION['email']);
-      $stmt->execute();
-      $result = $stmt->get_result();
+  <main class="container">
+    
+    <div class="status-bar">
+      <?php if ($view === 'settings'): ?>
+          <div style="display:flex; align-items:center; gap:15px; width:100%;">
+              <a href="admin_page.php?view=dashboard" class="btn btn-sm btn-secondary">&larr; Back</a>
+              <div>
+                  <h3 style="margin:0">System Settings</h3>
+                  <p style="margin:0; font-size:0.9rem">Manage hours, blocked dates, and admin accounts.</p>
+              </div>
+          </div>
+      <?php else: ?>
+          <div>
+              <?php      
+              $stmt = $conn->prepare("SELECT fName, lName FROM user WHERE email = ?");
+              $stmt->bind_param("s", $_SESSION['email']);
+              $stmt->execute();
+              $result = $stmt->get_result();
+              $username = "Admin";
+              if ($row = $result->fetch_assoc()) {
+                  $username = $row['fName'] . " " . $row['lName'];
+              }
+              echo "<h3 style='margin:0'>Admin Dashboard: " . htmlspecialchars($username) . "</h3>";
+              ?>
+          </div>
+      <?php endif; ?>
+    </div>
 
-      $username = "";
-
-      if ($row = $result->fetch_assoc()) {
-          $username = $row['fName'] . " " . $row['lName'];
-      }
-      // $username = rtrim($username, " "); 
-
-      
-      if (isset($_SESSION['token'])) {
-        $email = $_SESSION['email'];
-        echo "Welcome back, " . $username . "! Use this page to review upcoming appointments and adjust tutoring availability.";
-      } else {
-        echo "Please log in.";
-       }
-      ?>
-      </p>
-    </section>
-
-    <section class="grid">
-      <!-- Left side: upcoming appointments + display scripts -->
-      <div>
-        <section class="card">
-          <h2>Upcoming Appointments (Next 14 Days)</h2>
-          <div id="upcomingAppointments">Loading appointments...</div>
-        </section>
-
-<!-------------------------------------------------------------------------------------------->
-<!-------------------------------------------------------------------------------------------->
-<!-------------------------------------------------------------------------------------------->
-<!-------------------------------------------------------------------------------------------->
-<!-------------------------------------------------------------------------------------------->
-<!-------------------------------------------------------------------------------------------->
-<!-------------------------------------------------------------------------------------------->
-<!-------------------------------------------------------------------------------------------->
-<!-------------------------------------------------------------------------------------------->
-<!-------------------------------------------------------------------------------------------->
-<!-------------------------------------------------------------------------------------------->
-        <section class="card">
-          <h2>Cancel Appointment</h2>
-          <form id="cancelAppointmentForm" method="POST" onsubmit="cancelAppointment(event)">
-            <label for="appointmentId">Appointment ID to Cancel</label>
-            <input type="number" id="appointmentId" name="appointmentId" required>
-            <button type="submit">Cancel Appointment</button>
-          </form>
-          <div id="appointmentOutput"></div>
-        </section>
+    <?php if ($msg): ?>
+        <div class="alert alert-info mt-4" style="background:#e6fffa; color:#2c7a7b; border-color:#b2f5ea;">
+            <strong>Success:</strong> <?php echo htmlspecialchars($msg); ?>
         </div>
+    <?php endif; ?>
+    
+    <?php if ($error): ?>
+        <div class="alert alert-error mt-4">
+            <strong>Error:</strong> <?php echo htmlspecialchars($error); ?>
+        </div>
+    <?php endif; ?>
 
-      <!-- Right side: controls -->
-      <div>
+
+    <?php if ($view === 'settings'): ?>
+    
+    <section class="settings-grid">
+        
         <section class="card">
-          <h2>Change Weekly Scheduling Hours</h2>
-          <form id="changeHoursForm" method="POST" onsubmit="changeHoursHandler(event)">
-            <label for="dayOfWeek">Day of the Week</label>
-            <select id="dayOfWeek" name="dayOfWeek" required>
+          <h2>Weekly Hours</h2>
+          <p>Set the standard recurring schedule for each day.</p>
+          <form method="POST" action="change_hours.php">
+            <label>Day of the Week</label>
+            <select name="dayOfWeek" required>
               <option value="">Select a day</option>
               <option value="1">Monday</option>
               <option value="2">Tuesday</option>
@@ -116,255 +121,144 @@ require __DIR__ . '/config.php';
               <option value="7">Sunday</option>
             </select>
 
-            <label for="startTime">Start Time</label>
-            <input type="time" id="startTime" name="startTime" required>
-
-            <label for="endTime">End Time</label>
-            <input type="time" id="endTime" name="endTime" required>
-
-            <button type="submit">Update Weekly Hours</button>
+            <div style="display:flex; gap:15px; margin-bottom:1rem;">
+                <div style="flex:1"><label>Open</label><input type="time" name="startTime" required></div>
+                <div style="flex:1"><label>Close</label><input type="time" name="endTime" required></div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%">Update Weekly Schedule</button>
           </form>
         </section>
 
         <section class="card">
           <h2>Block / Unblock Dates</h2>
-
-          <form id="blockDateForm" method="POST" onsubmit="blockDateHandler(event)">
-            <label for="blockDate">Date to Block</label>
-            <input type="date" id="blockDate" name="blockDate" required>
-            <button type="submit">Block Date</button>
+          <p>Close the center for holidays or specific events.</p>
+          <form method="POST" action="block_date.php" style="margin-bottom:2rem;">
+            <label style="color:#D32F2F;">Block a Date (Cancels Appointments)</label>
+            <div style="display:flex; gap:8px;">
+                <input type="date" name="blockDate" required style="margin:0; flex:1;">
+                <button type="submit" class="btn btn-danger">Block</button>
+            </div>
           </form>
-
-          <form id="unblockDateForm" method="POST" onsubmit="unblockDateHandler(event)" style="margin-top:10px;">
-            <label for="unblockDate">Date to Unblock</label>
-            <input type="date" id="unblockDate" name="unblockDate" required>
-            <button type="submit">Unblock Date</button>
+          <form method="POST" action="unblock_date.php">
+            <label>Unblock a Date</label>
+            <div style="display:flex; gap:8px;">
+                <input type="date" name="unblockDate" required style="margin:0; flex:1;">
+                <button type="submit" class="btn btn-secondary">Unblock</button>
+            </div>
           </form>
         </section>
 
         <section class="card">
-          <h2>Change Daily Hours</h2>
-          <form id="changeDailyHoursForm" method="POST" onsubmit="changeDailyHoursHandler(event)">
-            <label for="changeHoursDate">Specific Date</label>
-            <input type="date" id="changeHoursDate" name="changeHoursDate" required>
-
-            <label for="updatedStartTime">Start Time</label>
-            <input type="time" id="updatedStartTime" name="updatedStartTime" required>
-
-            <label for="updatedEndTime">End Time</label>
-            <input type="time" id="updatedEndTime" name="updatedEndTime" required>
-
-            <button type="submit">Update Daily Hours</button>
+          <h2>Daily Override</h2>
+          <p>Change hours for a specific single date.</p>
+          <form method="POST" action="change_daily_hours.php">
+            <label>Date</label>
+            <input type="date" name="changeHoursDate" required>
+            <div style="display:flex; gap:15px; margin-bottom:1rem;">
+                <div style="flex:1"><label>New Open</label><input type="time" name="updatedStartTime" required></div>
+                <div style="flex:1"><label>New Close</label><input type="time" name="updatedEndTime" required></div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%">Set Daily Override</button>
           </form>
-
-          <!-- <div id="changeHoursOutput"></div> -->
         </section>
-        <details class="card">
-          <summary>Add Admin Account</summary>
-          <form onsubmit="addAdminHandler(event)" method="POST">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            <label for="fName">First Name:</label>
-            <input type="text" id="fName" name="fName" required>
-            <label for="lName">Last Name:</label>
-            <input type="text" id="lName" name="lName" required>
-            <button type="submit">Submit</button>
-            <div id="adminOutput"></div>
+
+        <section class="card">
+          <h2>Admin Access</h2>
+          <p>Grant administrative privileges to a user.</p>
+          <form method="POST" action="add_admin.php">
+            <label>Email</label>
+            <input type="email" name="email" required>
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1"><label>First Name</label><input type="text" name="fName" required></div>
+                <div style="flex:1"><label>Last Name</label><input type="text" name="lName" required></div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%">Add New Admin</button>
           </form>
-        </details>
+        </section>
+
+    </section>
+
+
+    <?php else: ?>
+
+    <section class="dashboard-grid">
+      <div class="main-content">
+        <section class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+             <h2 style="margin:0; border:none;">Upcoming Appointments Overview</h2>
+             <span style="font-size:0.8rem; color:#666; background:#eee; padding:2px 8px; border-radius:4px;">Next 14 Days</span>
+          </div>
+          <div id="upcomingAppointments">Loading appointments...</div>
+        </section>
+
+        <section class="card" style="background:#fff5f5; border-color:#fed7d7;">
+          <h2 style="border-bottom-color:#e53e3e; color:#c53030;">Cancel Any Appointment</h2>
+          <form method="POST" action="cancel_appointment.php" style="display:flex; gap:12px; align-items:flex-end;">
+            <div style="flex-grow:1;">
+                <label for="appointmentId">Appointment ID to Cancel</label>
+                <input type="number" id="appointmentId" name="appointmentId" placeholder="Enter ID" required style="margin:0;">
+            </div>
+            <button type="submit" class="btn btn-danger">Cancel Appointment</button>
+          </form>
+        </section>
+      </div>
+
+      <div class="sidebar">
+        <section class="card">
+          <h2>Settings & Schedule</h2>
+          <p>Manage weekly hours, block specific dates, handle daily overrides, and add new admins.</p>
+          
+          <a href="admin_page.php?view=settings" class="btn btn-primary" style="width:100%; text-align:center; justify-content: center;">
+              Manage Settings &rarr;
+          </a>
+        </section>
       </div>
     </section>
-  </main>
-
-  <script>
-    // Change weekly hours
-    function changeHoursHandler(event) {
-      event.preventDefault();
-      const form = event.target;
-      const formData = new FormData(form);
-      fetch('change_hours.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.text())
-      .then(data => {
-        // document.getElementById("changeHoursOutput").innerHTML = data;
-        alert(data);
-      })
-      .catch(error => {
-        // document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
-        alert("Error: " + error);
-      });
-    }
-
-    // Change daily hours
-    function changeDailyHoursHandler(event) {
-      event.preventDefault();
-      const form = event.target;
-      const formData = new FormData(form);
-      fetch('change_daily_hours.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.text())
-      .then(data => {
-        alert(data);
-        // document.getElementById("changeHoursOutput").innerHTML = data;
-      })
-      .catch(error => {
-        alert("Error: " + error);
-        // document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
-      });
-    }
-
-    // Block date
-    function blockDateHandler(event) {
-      event.preventDefault();
-      const form = event.target;
-      const formData = new FormData(form);
-      fetch('block_date.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.text())
-      .then(data => {
-        alert(data);
-        // document.getElementById("changeHoursOutput").innerHTML = data;
-      })
-      .catch(error => {
-        alert("Error: " + error);
-        // document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
-      });
-    }
-
-    // Unblock date
-    function unblockDateHandler(event) {
-      event.preventDefault();
-      const form = event.target;
-      const formData = new FormData(form);
-      fetch('unblock_date.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.text())
-      .then(data => { 
-        alert(data);
-        // document.getElementById("changeHoursOutput").innerHTML = data;
-      })
-      .catch(error => {
-        alert("Error: " + error);
-        // document.getElementById("changeHoursOutput").innerHTML = "Error: " + error;
-      });
-    }
-
-    // Add admin account
-    function addAdminHandler(event) {
-      event.preventDefault();
-      const form = event.target;
-      const formData = new FormData(form);
-      fetch('add_admin.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.text())
-      .then(data => {
-        alert(data);
-       // document.getElementById("adminOutput").innerHTML = data;
-      })
-      .catch(error => {
-        alert("Error: " + error);
-       // document.getElementById("adminOutput").innerHTML = "Error: " + error;
-      });
-    }
-
-    // Cancel Appointment
-    function cancelAppointment(event) {
-      event.preventDefault();
-      const form = event.target;
-      const formData = new FormData(form);
-      fetch('cancel_appointment.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.text())
-      .then(data => {
-        alert(data);
-        loadAppointments();
-        // document.getElementById("appointmentOutput").innerHTML = data;
-      })
-      .catch(error => {
-        alert("Error: " + error);
-        // document.getElementById("appointmentOutput").innerHTML = "Error: " + error;
-      });
-    }
-
-    // Load upcoming appointments on page load
+    
+    <script>
+    // Only load appointments if we are on the dashboard view
     document.addEventListener("DOMContentLoaded", loadAppointments);
     function loadAppointments() {
-      const today = new Date();
-      const days = [];
-      for (let i = 0; i < 14; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() + i);
-        const formattedDate = date.toISOString().split("T")[0]; // YYYY-MM-DD
-        days.push({
-          date: formattedDate,
-          appointments: []
-        });
-      }
+      // If the element doesn't exist (because we are in settings view), stop.
+      if (!document.getElementById("upcomingAppointments")) return;
 
       fetch("get_all_upcoming.php")
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
-          if (Array.isArray(data)) {
-            data.forEach(app => {
-              const match = days.find(d => d.date === app.app_date);
-              if (match) {
-                match.appointments.push(app);
-              }
-            });
+          if (!Array.isArray(data) || data.length === 0) {
+             document.getElementById("upcomingAppointments").innerHTML = "<p>No upcoming appointments found.</p>";
+             return;
           }
 
-          let calendar = '<div class="calendar-wrap">';
-          days.forEach(day => {
-          const dateObj = new Date(day.date + "T00:00:00");
+          let html = '<div class="calendar-wrap">';
+          data.forEach(app => {
+            const dateObj = new Date(app.app_date + "T00:00:00");
+            const dayLabel = dateObj.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+            const sectionBadge = app.section ? `<span style="background:#eee; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:700; color:#333; float:right;">Sec ${app.section}</span>` : '';
 
-            const dayLabel = dateObj.toLocaleDateString(undefined, {
-              weekday: "short",
-              month: "short",
-              day: "numeric"
-            });
-
-            calendar += `
-              <div class="calendar-day">
-                <strong>${dayLabel}</strong><br>
-                <small>${day.date}</small>
+            html += `
+              <div class="calendar-appt" style="padding:12px;">
+                <div style="font-size:0.85rem; color:#666; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">
+                    ${dayLabel}
+                </div>
+                <div style="margin-bottom:6px; display:flex; justify-content:space-between;">
+                    <strong style="font-size:0.9rem; color:var(--primary);">${app.app_time.slice(0,5)}</strong>
+                    ${sectionBadge}
+                </div>
+                <div style="font-weight:600; font-size:0.9rem; margin-bottom:2px;">${app.fName || ''} ${app.lName || ''}</div>
+                <div style="font-size:0.8rem; color:#666; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${app.email}</div>
+                <div style="background:#f4f6f8; padding:6px; border-radius:4px; font-size:0.85rem; color:#333; margin-bottom:6px; font-style:italic; border:1px solid #eee;">"${app.reason || 'No reason'}"</div>
+                <small style="color:#999; font-size:0.75rem;">Appt ID: ${app.id}</small>
+              </div>
             `;
-
-            if (day.appointments.length > 0) {
-              day.appointments.forEach(app => {
-                calendar += `
-                  <div class="calendar-appt">
-                    <strong>${app.app_time}</strong><br>
-                    ${app.email}<br>
-                    <small>${app.reason || ""}<br>ID: ${app.id}</small>
-                  </div>
-                `;
-              });
-            } else {
-              calendar += `<div class="calendar-none">No appointments</div>`;
-            }
-
-            calendar += `</div>`;
           });
-          calendar += `</div>`;
-
-          document.getElementById("upcomingAppointments").innerHTML = calendar;
+          document.getElementById("upcomingAppointments").innerHTML = html + '</div>';
         })
-        .catch(error => {
-          document.getElementById("upcomingAppointments").innerHTML = "Error: " + error;
-        });
+        .catch(error => { document.getElementById("upcomingAppointments").innerHTML = "Error loading data."; });
     }
-  </script>
+    </script>
+
+    <?php endif; ?>
+  </main>
 </body>
 </html>
