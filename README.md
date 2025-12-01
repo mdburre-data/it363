@@ -10,9 +10,8 @@ Navigate to: http://localhost/it363/ to confirm the site exists. To get find pag
 
 TODO:
 General:
-   Daily Email reminders
-   15 Minute before reminder
+   
 Admin Page:
-   Appointment Cancellation returns raw JSON   
+   Blocking a day will not cancel appointments on that date
 Student Page:  
     

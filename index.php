@@ -68,26 +68,53 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      fetch('get_hours.php')
-        .then(response => response.json())
-        .then(data => {
-          let hoursHTML = '<ul style="list-style: none; padding: 0; margin:0;">';
-          data.forEach(row => {
-            const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            const dayName = days[parseInt(row.day_of_week) % 7];
-            const start = row.start_time === "00:00:00" && row.end_time === "00:00:00"
-              ? "<span style='color:#ccc; font-weight:500;'>Closed</span>"
-              : `<span>${row.start_time.slice(0,5)} - ${row.end_time.slice(0,5)}</span>`;
-            hoursHTML += `<li style="padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items:center;">
-                            <strong style="color: var(--secondary);">${dayName}</strong> 
-                            ${start}
-                          </li>`;
-          });
-          hoursHTML += '</ul>';
-          document.getElementById('tutoringHoursOutput').innerHTML = hoursHTML;
-        })
-        .catch(error => { document.getElementById('tutoringHoursOutput').innerHTML = 'Error loading hours.'; });
+
+  function to12Hour(timeStr) {
+    if (!timeStr) return "";
+
+    // Split the time string into hours and minutes
+    let [hour, minute] = timeStr.split(":"); 
+    hour = parseInt(hour, 10);
+
+    // Determine AM/PM
+    const ampm = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12;
+
+    return `${hour}:${minute} ${ampm}`;
+  }
+
+  fetch('get_hours.php')
+    .then(response => response.json())
+    .then(data => {
+      let hoursHTML = '<ul style="list-style: none; padding: 0; margin:0;">';
+
+      data.forEach(row => {
+
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayName = days[(parseInt(row.day_of_week) % 7)];
+
+        const isClosed = row.start_time === "00:00:00" && row.end_time === "00:00:00";
+
+        const start = isClosed
+          ? "<span style='color:#ccc; font-weight:500;'>Closed</span>"
+          : `<span>${to12Hour(row.start_time)} - ${to12Hour(row.end_time)}</span>`;
+
+        hoursHTML += `
+          <li style="padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items:center;">
+            <strong style="color: var(--secondary);">${dayName}</strong>
+            ${start}
+          </li>`;
+      });
+
+      hoursHTML += '</ul>';
+      document.getElementById('tutoringHoursOutput').innerHTML = hoursHTML;
+    })
+    .catch(error => {
+      document.getElementById('tutoringHoursOutput').innerHTML = 'Error loading hours.';
     });
+
+});
+
 
     document.addEventListener("DOMContentLoaded", function() {
         const slides = document.querySelectorAll('.hero-carousel .carousel-img');

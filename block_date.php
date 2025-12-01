@@ -31,10 +31,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['blockDate'])) {
         $updateStmt->close();
     }
     
-    $cancelStmt = $conn->prepare("DELETE FROM appointments WHERE app_date = ? AND is_scheduled = FALSE");
-    $cancelStmt->bind_param('s', $formattedDate);
-    $cancelStmt->execute();
-    $cancelStmt->close();
+    // Clear scheduled appointments
+    $updateStmt = $conn->prepare(
+        "UPDATE appointments 
+        SET reason = NULL, email = NULL, is_scheduled = FALSE 
+        WHERE app_date = ? AND is_scheduled = TRUE"
+    );
+    $updateStmt->bind_param('s', $formattedDate);
+    $updateStmt->execute();
+    $updateStmt->close();
+
+    // Delete unscheduled appointments
+    $deleteStmt = $conn->prepare(
+        "DELETE FROM appointments 
+        WHERE app_date = ? AND is_scheduled = FALSE"
+    );
+    $deleteStmt->bind_param('s', $formattedDate);
+    $deleteStmt->execute();
+    $deleteStmt->close();
+
+    
     
     header("Location: admin_page.php?view=settings&msg=Date blocked successfully");
 } else {
