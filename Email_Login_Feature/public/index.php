@@ -16,22 +16,6 @@ $mode = $_GET['mode'] ?? ($_POST['mode'] ?? 'login');
 // Bring in cookie helpers
 require_once __DIR__ . '/../../Session_Cookie/auth.php';
 
-// If we’ve landed on the dashboard view, set/refresh the cookie, then go to student_page.php
-if (isset($mode) && $mode === 'dashboard') {
-  if(userIsAdmin($pdo, userEmail())){
-    ensureAuthCookie($COOKIE_NAME, $INACTIVIT, userEmail(), TRUE);
-    // Redirect to the admin page (absolute path from web root is safest)
-    header('Location: /it363/admin_page.php');
-    exit;
-  }else{
-    ensureAuthCookie($COOKIE_NAME, $INACTIVIT, userEmail());
-    // Redirect to the student page (absolute path from web root is safest)
-    header('Location: /it363/student_page.php');
-  }
-    exit;
-
-}
-
 use App\DB;
 use App\Mailer;
 
